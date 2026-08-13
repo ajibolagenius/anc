@@ -88,6 +88,8 @@ Status / X. Rendered server-side as an image (e.g. via `@vercel/og` /
   spammed and to reduce the bot's ban-risk profile.
 - Idempotent by design (`birthday_notifications` unique per member/year/
   channel) so a cron retry never double-sends.
+- Both the email and the WhatsApp message close with the shared signature
+  block (see §8).
 
 ### 4.3 Giveaway & Jersey Raffle Hub
 
@@ -106,6 +108,7 @@ Status / X. Rendered server-side as an image (e.g. via `@vercel/og` /
   approved members, or a specific state/tier), sends via Resend.
 - Optional: also post a short summary to the WhatsApp group.
 - Per-recipient delivery status tracked (sent/failed/bounced).
+- Closes with the shared signature block in the email footer (see §8).
 
 ### 4.5 Matchday Prediction Hub & Leaderboard
 
@@ -172,6 +175,7 @@ Status / X. Rendered server-side as an image (e.g. via `@vercel/og` /
   skips sending rather than posting an empty digest.
 - **Graceful degradation**: if the summarization call fails, fall back to
   posting raw headlines + links rather than blocking the whole digest.
+- Closes with the shared signature block (see §8).
 
 ## 5. System Architecture
 
@@ -225,7 +229,7 @@ ANC/
     web/       # Next.js: public registration, member portal, admin dashboard, API routes, cron endpoint
     wa-bot/    # Standalone Baileys service on the Oracle Cloud VM — session + internal API only, no business logic
   packages/
-    shared/    # zod schemas, generated Supabase types, shared enums
+    shared/    # zod schemas, generated Supabase types, shared enums, outbound-message signature template
   supabase/
     migrations/
 ```
@@ -389,6 +393,23 @@ columns.
 - **Colors**: Arsenal Red `#DB0007`, Gold `#9C824A`, Navy `#023474`.
 - Digital Fan Pass and email templates should use this palette consistently
   so the "brand" feels the same across web, email, and WhatsApp graphics.
+- **Signature / Attribution**: this platform is a volunteer, fan-love
+  project — not commissioned or paid work. Every automated outbound
+  message (WhatsApp birthday shoutout, news digest, giveaway winner
+  announcement) and every newsletter email closes with a separated
+  signature block — **appended to the same message**, not sent as a
+  separate one — e.g.:
+
+  ```
+  -------------------------
+  Built with love by Ajibola Don_Genius
+  ```
+
+  Implemented as a single shared template
+  (`packages/shared/signature.ts`, one plain-text version for WhatsApp and
+  one HTML `<hr/>`-based version for email) so every message-composing code
+  path pulls from the same source and the wording only ever changes in one
+  place.
 
 ## 9. Non-Functional Requirements
 
