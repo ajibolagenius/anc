@@ -69,3 +69,38 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     role: adminRow.role as AdminSession["role"],
   };
 }
+
+export type MemberSession = {
+  userId: string;
+  memberId: string;
+  fullName: string;
+  activityTier: string;
+};
+
+/**
+ * Returns the current approved member's session, or null if not signed in,
+ * not yet linked to a members row, or not yet approved. Uses the RLS-scoped
+ * session client (members_select_own policy) — same pattern as
+ * getAdminSession(), kept as a separate function since "is an approved
+ * member" and "is a platform admin" are deliberately distinct checks.
+ */
+export async function getMemberSession(): Promise<MemberSession | null> {
+  const supabase = await createSessionClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return null;
+
+  const { data: memberRow } = await supabase
+    .from("members")
+    .select("id, full_name, activity_tier, registration_status")
+    .eq("auth_user_id", userData.user.id)
+    .maybeSingle();
+
+  if (!memberRow || memberRow.registration_status !== "approved") return null;
+
+  return {
+    userId: userData.user.id,
+    memberId: memberRow.id,
+    fullName: memberRow.full_name,
+    activityTier: memberRow.activity_tier,
+  };
+}

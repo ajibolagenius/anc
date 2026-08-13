@@ -1,15 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAdminSession } from "@/lib/supabase/server-session";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { ACTIVITY_TIERS, type ActivityTier } from "@anc/shared";
-
-async function requireAdmin() {
-  const admin = await getAdminSession();
-  if (!admin) throw new Error("Not authorized");
-  return admin;
-}
 
 export async function approveMember(formData: FormData) {
   const admin = await requireAdmin();

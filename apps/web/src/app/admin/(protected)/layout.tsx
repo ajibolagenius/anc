@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getAdminSession } from "@/lib/supabase/server-session";
-import { SignOutButton } from "./sign-out-button";
+import { SignOutButton } from "@/components/sign-out-button";
 import { BotHealth } from "./_components/bot-health";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -25,6 +25,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               Members
             </Link>
+            <Link
+              href="/admin/giveaways"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Giveaways
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-4">
@@ -33,7 +39,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <p className="text-foreground/80">{admin.displayName}</p>
             <p>{admin.email}</p>
             <div className="mt-2">
-              <SignOutButton />
+              <SignOutButton redirectTo="/admin/login" />
             </div>
           </div>
         </div>
