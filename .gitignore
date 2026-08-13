@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+dist/
+out/
+
+# Env files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# WhatsApp bot session (never commit — contains live auth credentials)
+apps/wa-bot/auth/
+
+# Misc
+.DS_Store
+*.log
+.turbo/

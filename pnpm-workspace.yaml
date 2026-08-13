@@ -1,0 +1,9 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Carried over from the apps/web (Next.js) scaffold — native build scripts
+# that don't need to run postinstall.
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

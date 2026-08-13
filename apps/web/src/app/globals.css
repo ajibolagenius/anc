@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  /* ANC brand palette (see PRD §8) */
+  --arsenal-red: #db0007;
+  --arsenal-red-bright: #ff1a24;
+  --arsenal-gold: #9c824a;
+  --arsenal-navy: #023474;
+  --arsenal-navy-deep: #01142e;
+  --whatsapp-green: #25d366;
+
+  --background: var(--arsenal-navy-deep);
+  --surface: #0a1f42;
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --foreground: #f5f3ee;
+  --muted: #aab4c6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-arsenal-red: var(--arsenal-red);
+  --color-arsenal-red-bright: var(--arsenal-red-bright);
+  --color-arsenal-gold: var(--arsenal-gold);
+  --color-arsenal-navy: var(--arsenal-navy);
+  --color-arsenal-navy-deep: var(--arsenal-navy-deep);
+  --color-whatsapp-green: var(--whatsapp-green);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 15% -10%, rgba(219, 0, 7, 0.25), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(156, 130, 74, 0.15), transparent);
+  background-attachment: fixed;
+}
+
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Faint dot-grid texture — a quiet stadium-floodlight-at-night feel without
+   reproducing any club crest or trademarked imagery. */
+.texture-dots {
+  background-image: radial-gradient(rgba(245, 243, 238, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
+}
+
+.animate-glow {
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
