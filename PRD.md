@@ -101,6 +101,15 @@ Status / X. Rendered server-side as an image (e.g. via `@vercel/og` /
 - Full winner history archive and a general audit log (entries, draws,
   re-draws) — supports the annual jersey giveaway and any other one-off
   giveaway.
+- **Multi-winner giveaways**: `giveaway_winners.rank` supports multiple
+  winners per giveaway (e.g. 3 jerseys → 3 rows, rank 1/2/3).
+- **Re-draws**: if a winner is unreachable or turns out ineligible, the
+  admin marks that winner's row `disqualified` (with a reason — the row is
+  never deleted, preserving the audit trail) and triggers "draw
+  replacement," which picks a new winner at the same rank from the
+  remaining eligible entrants, excluding everyone already selected or
+  disqualified. The replacement row references the one it replaces, so full
+  lineage stays visible in the winner history.
 
 ### 4.4 Newsletter / Broadcast
 
@@ -117,16 +126,22 @@ Status / X. Rendered server-side as an image (e.g. via `@vercel/og` /
 - Logged-in members submit a prediction per match: score prediction +
   first-goalscorer guess, before kickoff.
 - After the match, an admin enters the actual result; points are computed
-  automatically (e.g. exact score / correct outcome / correct scorer —
-  weighting to be finalized with the user before building this module).
+  automatically using a stacking formula (kept simple since this is just
+  for fan fun, not a serious competition): **exact scoreline = 3 points**;
+  **correct outcome only** (win/draw/loss, without the exact score) **= 1
+  point**; **correct first goalscorer = +1 bonus**, stacking with either of
+  the above. Maximum 4 points per match.
 - A season leaderboard aggregates points per member — lightweight banter
   fuel, not a full fantasy-football system.
 
 ### 4.6 Watch Party Locator
 
-- Admins (or trusted members) post physical match-viewing locations tied to
-  a state/city (using the same state list as registration), with venue
-  name, address/map link, and contact info.
+- Admins can post listings directly (auto-approved). Trusted `active`-tier
+  members can also submit listings, which land as `pending` until an admin
+  approves them — only `approved` listings appear in the public browse view.
+- Physical match-viewing locations tied to a state/city (using the same
+  state list as registration), with venue name, address/map link, and
+  contact info.
 - Members browse watch parties filtered by their own state of residence —
   helps coordinate real-world meetups around big matches.
 - Can optionally tie a watch party listing to a specific `match_id`, or
@@ -234,6 +249,14 @@ ANC/
     migrations/
 ```
 
+**WhatsApp group JID**: WhatsApp addresses every chat — including groups —
+by an internal identifier called a JID, never by its display name. The ANC
+group's JID has already been obtained (`120363206409553106@g.us`) and will
+be set directly as the `WA_GROUP_JID` environment variable when `apps/wa-bot`
+is scaffolded — no discovery step needed. (The bot's dedicated WhatsApp
+number still needs to be added to the group as a normal member before it
+can post there.)
+
 ## 6. Tech Stack
 
 | Component | Chosen Stack | Notes / Alternatives Considered |
@@ -317,7 +340,9 @@ giveaway_entries (
 giveaway_winners (
   id, giveaway_id, member_id, rank int default 1,
   selection_method text check (selection_method in ('random_auto','manual_override')),
-  selected_by -> admin_users, selected_at, prize_note
+  selected_by -> admin_users, selected_at, prize_note,
+  disqualified_at timestamptz, disqualified_reason text,
+  replaces_winner_id uuid references giveaway_winners(id)   -- set when this row is a re-draw replacement
 );
 giveaway_audit_log (
   id, giveaway_id, event_type text check (event_type in
@@ -362,7 +387,12 @@ watch_parties (
   venue_name text not null, address text, map_link text,
   contact_name text, contact_whatsapp text,
   is_recurring boolean default false,
-  created_by -> admin_users, created_at
+  submitted_by text not null check (submitted_by in ('admin','member')),
+  submitted_by_member_id uuid references members(id),  -- set when submitted_by = 'member'
+  status text not null default 'approved'
+         check (status in ('pending','approved','rejected')),  -- admin submissions auto-'approved'; member submissions start 'pending'
+  approved_by -> admin_users,
+  created_at
 );
 
 -- WhatsApp outbound audit
@@ -494,21 +524,9 @@ Each milestone below is checked end-to-end before moving to the next:
 
 ## 12. Open Questions / Risks
 
-- **News digest source list & cadence**: confirm the final RSS source list
-  (proposed: Arsenal.com, BBC Sport, Sky Sports, Arseblog, r/Gunners) and the
-  08:00 WAT send time before building M2; also confirm an Anthropic API
-  key/budget is available for the Claude Haiku summarization call (cost is
-  negligible at this volume, but it's a new external dependency).
-- **Prediction scoring rules**: exact-score vs correct-outcome vs
-  correct-scorer point weighting needs to be finalized before building M5.
-- **Watch party moderation**: should only admins post listings, or can
-  trusted "active" members submit them (with admin approval)?
-- **Digital Fan Pass distribution**: confirm the exact visual template/brief
-  for the card (beyond the ANC-number + name + avatar baseline above) —
-  this is a design decision, not just engineering.
-- **Multi-winner/re-draw semantics**: schema supports `rank` and a
-  `reopened` audit event for re-drawing an unreachable giveaway winner; the
-  admin workflow for this should be confirmed before M4.
-- **WhatsApp group JID discovery**: one-time manual step — add the bot
-  account to the ANC group, capture its JID via a one-off log/script, store
-  in `wa-bot` config.
+All prior open items have been resolved and folded into their respective
+sections above (news digest sources/cadence in §4.8, prediction scoring in
+§4.5, watch party moderation in §4.6, Digital Fan Pass distribution in §4.1,
+giveaway multi-winner/re-draw in §4.3, WhatsApp group JID setup in §5). No
+open items remain as of this revision; new ones will be added here if they
+come up during scaffolding/build.
