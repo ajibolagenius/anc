@@ -1,0 +1,28 @@
+; systemd unit for the ANC WhatsApp bot on the Oracle Cloud Always Free VM.
+;
+; Install:
+;   sudo cp anc-wa-bot.service /etc/systemd/system/anc-wa-bot.service
+;   sudo systemctl daemon-reload
+;   sudo systemctl enable --now anc-wa-bot
+;
+; First run needs an interactive terminal to scan the pairing QR code:
+;   sudo systemctl stop anc-wa-bot
+;   cd /opt/anc && pnpm --filter @anc/wa-bot start   # scan QR, Ctrl+C once connected
+;   sudo systemctl start anc-wa-bot                  # session is now persisted in apps/wa-bot/auth
+
+[Unit]
+Description=ANC WhatsApp bot (Baileys)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=anc
+WorkingDirectory=/opt/anc
+EnvironmentFile=/opt/anc/apps/wa-bot/.env
+ExecStart=/usr/bin/pnpm --filter @anc/wa-bot start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

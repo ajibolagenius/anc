@@ -5,5 +5,11 @@ packages:
 # Carried over from the apps/web (Next.js) scaffold — native build scripts
 # that don't need to run postinstall.
 allowBuilds:
+  # baileys: preinstall just checks the local Node engine version.
+  '@whiskeysockets/baileys': true
+  # esbuild: postinstall selects the correct prebuilt platform binary — required, standard practice.
+  esbuild: true
+  # protobufjs: postinstall is a minor, well-known benign setup script.
+  protobufjs: true
   sharp: false
   unrs-resolver: false

@@ -1,0 +1,6 @@
+# Reverse proxy for the wa-bot internal API, with automatic HTTPS.
+# Replace the domain below, then: sudo caddy run --config Caddyfile
+
+wa-bot.REPLACE_WITH_YOUR_DOMAIN.com {
+	reverse_proxy 127.0.0.1:8787
+}
