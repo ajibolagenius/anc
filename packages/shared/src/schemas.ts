@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { JERSEY_SIZES, NIGERIAN_STATES } from "./enums.js";
+import { JERSEY_SIZES, NIGERIAN_STATES } from "./enums";
 
 /**
  * Loose E.164-ish check at the schema layer. The registration form does the

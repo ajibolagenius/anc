@@ -378,3 +378,32 @@ create policy watch_parties_insert_member on watch_parties
     and status = 'pending'
     and submitted_by_member_id in (select id from members where auth_user_id = auth.uid())
   );
+
+-- ============================================================================
+-- Base table grants.
+--
+-- RLS policies filter *rows*; Postgres still requires the base table-level
+-- GRANT before a role may attempt the operation at all — without this,
+-- every query gets a flat "permission denied for table" regardless of RLS.
+--
+-- service_role: full access (it's the role the web app's server-side code
+-- uses via the service-role key; Supabase's own bypassrls attribute on this
+-- role is what skips RLS, but the base grant is still required).
+--
+-- authenticated: granted the same broad base privileges, but real access is
+-- still governed entirely by the RLS policies above — a table with RLS
+-- enabled and no matching policy for a role is effectively inaccessible to
+-- it regardless of this grant.
+--
+-- anon: intentionally granted nothing beyond schema usage — every feature in
+-- this app requires an approved member account, so there is no anonymous
+-- read/write surface by design.
+-- ============================================================================
+
+grant usage on schema public to anon, authenticated, service_role;
+
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
