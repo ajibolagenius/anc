@@ -23,6 +23,54 @@ export const NIGERIAN_STATES = [
 ] as const;
 export type NigerianState = (typeof NIGERIAN_STATES)[number];
 
+/**
+ * 3-letter code per state of residence, used to build a member's ANC number
+ * on approval: `ANC-{CODE}-{SEQUENCE}` (PRD §4.1, e.g. `ANC-LAG-0142`). This
+ * is the single source of truth for the mapping — the one-time SQL backfill
+ * in supabase/migrations/20260814050000_anc_number_assignment.sql mirrors it
+ * for members approved before this feature existed, but every assignment
+ * from here on passes the code computed from this map.
+ */
+export const STATE_CODES: Record<NigerianState, string> = {
+  "Abia": "ABI",
+  "Adamawa": "ADA",
+  "Akwa Ibom": "AKW",
+  "Anambra": "ANA",
+  "Bauchi": "BAU",
+  "Bayelsa": "BAY",
+  "Benue": "BEN",
+  "Borno": "BOR",
+  "Cross River": "CRO",
+  "Delta": "DEL",
+  "Ebonyi": "EBO",
+  "Edo": "EDO",
+  "Ekiti": "EKI",
+  "Enugu": "ENU",
+  "FCT (Abuja)": "ABJ",
+  "Gombe": "GOM",
+  "Imo": "IMO",
+  "Jigawa": "JIG",
+  "Kaduna": "KAD",
+  "Kano": "KAN",
+  "Katsina": "KAT",
+  "Kebbi": "KEB",
+  "Kogi": "KOG",
+  "Kwara": "KWA",
+  "Lagos": "LAG",
+  "Nasarawa": "NAS",
+  "Niger": "NIG",
+  "Ogun": "OGU",
+  "Ondo": "OND",
+  "Osun": "OSU",
+  "Oyo": "OYO",
+  "Plateau": "PLA",
+  "Rivers": "RIV",
+  "Sokoto": "SOK",
+  "Taraba": "TAR",
+  "Yobe": "YOB",
+  "Zamfara": "ZAM",
+};
+
 /** Prediction scoring formula (PRD §4.5) — kept simple, it's fan fun, not fantasy football. */
 export const PREDICTION_POINTS = {
   exactScore: 3,

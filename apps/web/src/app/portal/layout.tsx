@@ -4,9 +4,10 @@ import { getMemberSession } from "@/lib/supabase/server-session";
 import { SignOutButton } from "@/components/sign-out-button";
 import { SidebarLink } from "@/components/sidebar-link";
 import { SidebarShell } from "@/components/sidebar-shell";
-import { GiftIcon, CalendarIcon, TrophyIcon, MapPinIcon, GearIcon } from "@/components/icons";
+import { GiftIcon, CalendarIcon, TrophyIcon, MapPinIcon, GearIcon, ShieldIcon } from "@/components/icons";
 
 const NAV = [
+  { href: "/portal/fan-pass", label: "Fan Pass", icon: <ShieldIcon className="h-4 w-4" /> },
   { href: "/portal/giveaways", label: "Giveaways", icon: <GiftIcon className="h-4 w-4" /> },
   { href: "/portal/predictions", label: "Predictions", icon: <CalendarIcon className="h-4 w-4" /> },
   { href: "/portal/leaderboard", label: "Leaderboard", icon: <TrophyIcon className="h-4 w-4" /> },
