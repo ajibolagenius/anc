@@ -1,7 +1,44 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createSessionClient } from "@/lib/supabase/server-session";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+
+export async function updateMyProfile(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const session = await createSessionClient();
+  const { data: userData } = await session.auth.getUser();
+  if (!userData.user) throw new Error("Not signed in");
+
+  const { data: member } = await session
+    .from("members")
+    .select("id")
+    .eq("auth_user_id", userData.user.id)
+    .single();
+  if (!member) throw new Error("No matching member record");
+
+  const jerseySize = (formData.get("jerseySize") as string) || null;
+  const favoritePlayerCurrent = (formData.get("favoritePlayerCurrent") as string) || null;
+  const favoritePlayerAlltime = (formData.get("favoritePlayerAlltime") as string) || null;
+  const stateOfResidence = formData.get("stateOfResidence") as string;
+
+  const { error } = await session
+    .from("members")
+    .update({
+      jersey_size: jerseySize,
+      favorite_player_current: favoritePlayerCurrent,
+      favorite_player_alltime: favoritePlayerAlltime,
+      state_of_residence: stateOfResidence,
+    })
+    .eq("id", member.id);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/portal/settings");
+  revalidatePath("/portal");
+  return { success: true };
+}
 
 /**
  * NDPR-driven self-service deletion (PRD §9). Anonymizes PII in place rather

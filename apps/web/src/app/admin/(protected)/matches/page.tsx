@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { inputClassName } from "@/components/form-field";
+import { Badge } from "@/components/ui/badge";
+import { matchStatusTone } from "@/components/ui/status";
 import { createMatch } from "./actions";
-import { PageHeader } from "@/components/page-header";
-import { CalendarIcon } from "@/components/icons";
 
 export default async function MatchesPage() {
   const supabase = createServiceRoleClient();
@@ -13,56 +13,123 @@ export default async function MatchesPage() {
     .order("kickoff_at", { ascending: false });
 
   return (
-    <div>
-      <PageHeader icon={CalendarIcon} title="Matches" />
+    <div className="mx-auto max-w-5xl">
+      <div>
+        <h1 className="font-display text-3xl tracking-wide text-foreground sm:text-4xl">MATCH FIXTURES</h1>
+        <p className="mt-1 text-sm text-muted">
+          Schedule Arsenal fixtures, open prediction windows, and record official scorelines.
+        </p>
+      </div>
 
-      <form action={createMatch} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
-        <h2 className="text-sm font-medium text-foreground/90">New fixture</h2>
-        <input name="opponent" required placeholder="Opponent (e.g. Chelsea)" className={inputClassName} />
-        <input name="competition" placeholder="Competition (optional, e.g. Premier League)" className={inputClassName} />
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-muted">Kickoff</label>
-          <input type="datetime-local" name="kickoffAt" required className={inputClassName} />
+      {/* New Fixture Form */}
+      <div className="mt-8 rounded-2xl border border-surface-border bg-surface p-6 sm:p-7 shadow-xl max-w-xl">
+        <div className="flex items-center gap-2">
+          <PlusIcon className="h-5 w-5 text-arsenal-gold" />
+          <h2 className="font-display text-xl tracking-wide text-foreground">ADD NEW FIXTURE</h2>
         </div>
-        <button
-          type="submit"
-          className="self-start rounded-full bg-arsenal-red px-6 py-2.5 text-sm font-medium text-white hover:scale-[1.02]"
-        >
-          Create fixture
-        </button>
-      </form>
 
-      {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
+        <form action={createMatch} className="mt-5 flex flex-col gap-4">
+          <div>
+            <label htmlFor="opponent" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+              Opponent
+            </label>
+            <input
+              id="opponent"
+              name="opponent"
+              required
+              placeholder="e.g. Chelsea, Liverpool, Tottenham"
+              className="h-11 w-full rounded-xl border border-surface-border bg-white/5 px-4 text-sm text-foreground focus:border-arsenal-gold focus:outline-none"
+            />
+          </div>
 
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-surface-border">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="competition" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+                Competition
+              </label>
+              <input
+                id="competition"
+                name="competition"
+                placeholder="Premier League"
+                defaultValue="Premier League"
+                className="h-11 w-full rounded-xl border border-surface-border bg-white/5 px-4 text-sm text-foreground focus:border-arsenal-gold focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="kickoffAt" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+                Kickoff (WAT)
+              </label>
+              <input
+                id="kickoffAt"
+                type="datetime-local"
+                name="kickoffAt"
+                required
+                className="h-11 w-full rounded-xl border border-surface-border bg-white/5 px-4 text-sm text-foreground focus:border-arsenal-gold focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="mt-2">
+            <button
+              type="submit"
+              className="flex h-11 items-center justify-center rounded-xl bg-arsenal-red px-6 text-sm font-bold text-white transition-colors hover:bg-arsenal-red-bright"
+            >
+              Add Fixture
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {error && <p className="mt-6 text-xs text-arsenal-red-bright">{error.message}</p>}
+
+      {/* Matches List */}
+      <div className="mt-10 overflow-x-auto rounded-2xl border border-surface-border bg-surface shadow-xl">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
+          <thead className="border-b border-surface-border text-[11px] font-bold uppercase tracking-wider text-muted">
             <tr>
-              <th className="px-4 py-3 font-medium">Opponent</th>
-              <th className="px-4 py-3 font-medium">Competition</th>
-              <th className="px-4 py-3 font-medium">Kickoff</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Predictions</th>
+              <th className="px-5 py-3.5">Fixture</th>
+              <th className="px-5 py-3.5">Competition</th>
+              <th className="px-5 py-3.5">Kickoff</th>
+              <th className="px-5 py-3.5">Status</th>
+              <th className="px-5 py-3.5 text-right">Predictions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-surface-border">
             {matches?.map((m) => (
-              <tr key={m.id} className="border-b border-surface-border/60 last:border-0">
-                <td className="px-4 py-3">
-                  <Link href={`/admin/matches/${m.id}`} className="text-foreground hover:text-arsenal-gold">
-                    vs {m.opponent}
+              <tr key={m.id} className="transition-colors hover:bg-white/[0.02]">
+                <td className="px-5 py-3.5 font-semibold text-foreground">
+                  <Link href={`/admin/matches/${m.id}`} className="hover:text-arsenal-gold">
+                    Arsenal vs {m.opponent}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-muted">{m.competition ?? "—"}</td>
-                <td className="px-4 py-3 text-muted">{new Date(m.kickoff_at).toLocaleString()}</td>
-                <td className="px-4 py-3 text-muted capitalize">{m.status}</td>
-                <td className="px-4 py-3 text-muted">{m.predictions?.[0]?.count ?? 0}</td>
+                <td className="px-5 py-3.5 text-xs text-muted">{m.competition || "Premier League"}</td>
+                <td className="px-5 py-3.5 text-xs text-muted whitespace-nowrap">
+                  {new Date(m.kickoff_at).toLocaleDateString("en-NG", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
+                <td className="px-5 py-3.5">
+                  <Badge tone={matchStatusTone(m.status as any)}>
+                    {m.status.toUpperCase()}
+                  </Badge>
+                </td>
+                <td className="px-5 py-3.5 text-right font-mono text-xs text-foreground">
+                  {m.predictions?.[0]?.count ?? 0}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+
         {matches?.length === 0 && (
-          <p className="px-4 py-8 text-center text-sm text-muted">No fixtures yet — create the first one above.</p>
+          <div className="p-10 text-center text-sm text-muted">
+            No fixtures scheduled yet. Add the next upcoming match above!
+          </div>
         )}
       </div>
     </div>

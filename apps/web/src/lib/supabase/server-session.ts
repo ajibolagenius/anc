@@ -77,6 +77,15 @@ export type MemberSession = {
   memberId: string;
   fullName: string;
   activityTier: string;
+  ancNumber: string | null;
+  stateOfResidence: string;
+  stateOfOrigin: string | null;
+  email: string;
+  whatsappNumber: string;
+  jerseySize: string | null;
+  favoritePlayerCurrent: string | null;
+  favoritePlayerAlltime: string | null;
+  createdAt: string;
 };
 
 /**
@@ -93,7 +102,9 @@ export async function getMemberSession(): Promise<MemberSession | null> {
 
   const { data: memberRow } = await supabase
     .from("members")
-    .select("id, full_name, activity_tier, registration_status")
+    .select(
+      "id, full_name, activity_tier, registration_status, anc_number, state_of_residence, state_of_origin, email, whatsapp_number, jersey_size, favorite_player_current, favorite_player_alltime, created_at",
+    )
     .eq("auth_user_id", userData.user.id)
     .maybeSingle();
 
@@ -104,5 +115,14 @@ export async function getMemberSession(): Promise<MemberSession | null> {
     memberId: memberRow.id,
     fullName: memberRow.full_name,
     activityTier: memberRow.activity_tier,
+    ancNumber: memberRow.anc_number,
+    stateOfResidence: memberRow.state_of_residence,
+    stateOfOrigin: memberRow.state_of_origin,
+    email: memberRow.email,
+    whatsappNumber: memberRow.whatsapp_number,
+    jerseySize: memberRow.jersey_size,
+    favoritePlayerCurrent: memberRow.favorite_player_current,
+    favoritePlayerAlltime: memberRow.favorite_player_alltime,
+    createdAt: memberRow.created_at,
   };
 }
