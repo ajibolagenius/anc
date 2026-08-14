@@ -3,7 +3,11 @@ import { getAdminSession } from "@/lib/supabase/server-session";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 
 function toCsvValue(value: unknown): string {
-  const str = value === null || value === undefined ? "" : String(value);
+  let str = value === null || value === undefined ? "" : String(value);
+  // Formula-injection guard: a leading =, +, -, @, tab, or CR makes Excel/
+  // Sheets interpret the cell as a formula when the export is opened —
+  // prefixing with a quote forces it to stay literal text.
+  if (/^[=+\-@\t\r]/.test(str)) str = `'${str}`;
   return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 

@@ -48,7 +48,14 @@ export const watchPartySubmissionSchema = z.object({
   city: z.string().trim().min(2).max(80),
   venueName: z.string().trim().min(2).max(120),
   address: z.string().trim().max(240).optional(),
-  mapLink: z.string().trim().url().optional(),
+  mapLink: z
+    .string()
+    .trim()
+    .url()
+    .refine((value) => ["http:", "https:"].includes(new URL(value).protocol), {
+      message: "Map link must be a regular http(s) URL",
+    })
+    .optional(),
   contactName: z.string().trim().max(80).optional(),
   contactWhatsapp: whatsappNumberSchema.optional(),
   isRecurring: z.boolean().default(false),

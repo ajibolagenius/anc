@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createSessionClient } from "@/lib/supabase/server-session";
 import { watchPartySubmissionSchema } from "@anc/shared";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * RLS-scoped session client — the insert only succeeds because of
@@ -35,6 +36,9 @@ export async function submitWatchParty(formData: FormData) {
     .eq("auth_user_id", userData.user.id)
     .single();
   if (memberError || !member) throw new Error("No matching member record");
+
+  const allowed = await checkRateLimit(`watch-party-submit:${member.id}`, { windowSeconds: 3600, max: 5 });
+  if (!allowed) throw new Error("Too many listings submitted. Please try again in an hour.");
 
   const { error } = await supabase.from("watch_parties").insert({
     match_id: input.matchId ?? null,

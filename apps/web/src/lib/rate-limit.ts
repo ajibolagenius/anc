@@ -2,11 +2,22 @@ import "server-only";
 import { headers } from "next/headers";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 
-/** Best-effort client IP from the proxy chain — Vercel sets x-forwarded-for. */
+/**
+ * Best-effort client IP from the proxy chain. X-Forwarded-For is built by
+ * prepending each hop's client-observed address and letting every proxy
+ * append the next hop, so the *first* entry is whatever the original caller
+ * claimed — trivially spoofable by anyone sending their own header — while
+ * the *last* entry is the address Vercel's own edge observed directly, which
+ * a client cannot override. Always take the last entry, never the first.
+ */
 export async function getClientIp(): Promise<string> {
   const h = await headers();
   const forwardedFor = h.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  if (forwardedFor) {
+    const hops = forwardedFor.split(",").map((hop) => hop.trim());
+    const closest = hops[hops.length - 1];
+    if (closest) return closest;
+  }
   return h.get("x-real-ip") ?? "unknown";
 }
 

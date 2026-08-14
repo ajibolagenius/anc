@@ -24,5 +24,19 @@ ExecStart=/usr/bin/pnpm --filter @anc/wa-bot start
 Restart=on-failure
 RestartSec=5
 
+; Sandboxing: if a dependency (baileys, pino, qrcode-terminal, ...) is ever
+; compromised via a supply-chain attack, these limit what the process can do
+; beyond its own working files.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/anc/apps/wa-bot/auth
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
 [Install]
 WantedBy=multi-user.target

@@ -3,4 +3,14 @@
 
 wa-bot.REPLACE_WITH_YOUR_DOMAIN.com {
 	reverse_proxy 127.0.0.1:8787
+
+	# Defense-in-depth headers. This endpoint is only ever called
+	# server-to-server (no browser client), but these are cheap and correct
+	# regardless.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+	}
 }
