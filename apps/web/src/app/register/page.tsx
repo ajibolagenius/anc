@@ -34,12 +34,45 @@ export default function RegisterPage() {
         </div>
         <h1 className="mt-6 font-display text-4xl text-foreground">Welcome to ANC 🔴</h1>
         <p className="mt-4 text-muted">{state.message}</p>
-        <Link
-          href="/"
-          className="mt-8 rounded-full border border-surface-border px-6 py-3 text-sm text-foreground transition-colors hover:border-arsenal-gold"
-        >
-          Back to home
-        </Link>
+
+        <div className="mt-8 w-full rounded-2xl border border-surface-border bg-surface/40 p-6 text-left">
+          <p className="text-xs uppercase tracking-[0.2em] text-arsenal-gold">What happens next</p>
+          <ol className="mt-4 flex flex-col gap-3 text-sm text-muted">
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-arsenal-red/15 text-xs font-semibold text-arsenal-red-bright">
+                1
+              </span>
+              <span>An admin reviews every new registration by hand, so approval isn&apos;t instant.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-arsenal-red/15 text-xs font-semibold text-arsenal-red-bright">
+                2
+              </span>
+              <span>We&apos;ll email you the moment your Fan Pass is approved.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-arsenal-red/15 text-xs font-semibold text-arsenal-red-bright">
+                3
+              </span>
+              <span>From there, sign in anytime with just your email — no password, we&apos;ll send a one-time link.</span>
+            </li>
+          </ol>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/"
+            className="rounded-full border border-surface-border px-6 py-3 text-sm text-foreground transition-colors hover:border-arsenal-gold"
+          >
+            Back to home
+          </Link>
+          <Link
+            href="/login"
+            className="rounded-full bg-arsenal-red px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          >
+            Go to sign-in
+          </Link>
+        </div>
       </div>
     );
   }

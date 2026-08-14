@@ -5,3 +5,6 @@ export const SITE = {
   shortName: "ANC",
   tagline: "North London's pride. Nigeria's own.",
 } as const;
+
+/** Absolute origin for links inside emails (no request context to read window.location from there). */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arsenalnigeria.community";
