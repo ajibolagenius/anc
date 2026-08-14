@@ -61,9 +61,10 @@ export default async function MembersPage({
   if (currentStatus !== "all") query = query.eq("registration_status", currentStatus);
   if (currentTier) query = query.eq("activity_tier", currentTier);
   if (currentState) query = query.eq("state_of_residence", currentState);
-  if (currentQ) {
+  const sanitizedQ = currentQ.replace(/[,().:"]/g, "").trim();
+  if (sanitizedQ) {
     query = query.or(
-      `full_name.ilike.%${currentQ}%,email.ilike.%${currentQ}%,whatsapp_number.ilike.%${currentQ}%`,
+      `full_name.ilike.%${sanitizedQ}%,email.ilike.%${sanitizedQ}%,whatsapp_number.ilike.%${sanitizedQ}%`,
     );
   }
 

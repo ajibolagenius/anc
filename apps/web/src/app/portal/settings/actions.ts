@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createSessionClient } from "@/lib/supabase/server-session";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 
+import { profileUpdateSchema } from "@anc/shared";
+
 export async function updateMyProfile(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const session = await createSessionClient();
   const { data: userData } = await session.auth.getUser();
@@ -16,18 +18,24 @@ export async function updateMyProfile(formData: FormData): Promise<{ success: bo
     .single();
   if (!member) throw new Error("No matching member record");
 
-  const jerseySize = (formData.get("jerseySize") as string) || null;
-  const favoritePlayerCurrent = (formData.get("favoritePlayerCurrent") as string) || null;
-  const favoritePlayerAlltime = (formData.get("favoritePlayerAlltime") as string) || null;
-  const stateOfResidence = formData.get("stateOfResidence") as string;
+  const parsed = profileUpdateSchema.safeParse({
+    jerseySize: formData.get("jerseySize") || undefined,
+    favoritePlayerCurrent: formData.get("favoritePlayerCurrent") || undefined,
+    favoritePlayerAlltime: formData.get("favoritePlayerAlltime") || undefined,
+    stateOfResidence: formData.get("stateOfResidence"),
+  });
+
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
 
   const { error } = await session
     .from("members")
     .update({
-      jersey_size: jerseySize,
-      favorite_player_current: favoritePlayerCurrent,
-      favorite_player_alltime: favoritePlayerAlltime,
-      state_of_residence: stateOfResidence,
+      jersey_size: parsed.data.jerseySize ?? null,
+      favorite_player_current: parsed.data.favoritePlayerCurrent ?? null,
+      favorite_player_alltime: parsed.data.favoritePlayerAlltime ?? null,
+      state_of_residence: parsed.data.stateOfResidence,
     })
     .eq("id", member.id);
 
@@ -63,9 +71,6 @@ export async function deleteMyAccount(): Promise<void> {
 
   const supabase = createServiceRoleClient();
 
-  const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(userData.user.id);
-  if (deleteAuthError) throw new Error(deleteAuthError.message);
-
   const { error: anonymizeError } = await supabase
     .from("members")
     .update({
@@ -84,4 +89,7 @@ export async function deleteMyAccount(): Promise<void> {
     })
     .eq("id", member.id);
   if (anonymizeError) throw new Error(anonymizeError.message);
+
+  const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(userData.user.id);
+  if (deleteAuthError) throw new Error(deleteAuthError.message);
 }

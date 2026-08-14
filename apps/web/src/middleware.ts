@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-// Refreshes the Supabase auth cookie on every request that touches /admin —
+// Refreshes the Supabase auth cookie on every request that touches /admin or /portal —
 // without this, a session can silently expire mid-visit since Server
 // Components can't write cookies themselves (see server-session.ts).
 export async function middleware(request: NextRequest) {
@@ -36,5 +36,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/portal/:path*"],
 };

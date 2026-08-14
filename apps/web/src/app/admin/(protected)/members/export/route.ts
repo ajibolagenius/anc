@@ -46,7 +46,12 @@ export async function GET(request: NextRequest) {
   if (status !== "all") query = query.eq("registration_status", status);
   if (tier) query = query.eq("activity_tier", tier);
   if (state) query = query.eq("state_of_residence", state);
-  if (q) query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,whatsapp_number.ilike.%${q}%`);
+  const sanitizedQ = q.replace(/[,().:"]/g, "").trim();
+  if (sanitizedQ) {
+    query = query.or(
+      `full_name.ilike.%${sanitizedQ}%,email.ilike.%${sanitizedQ}%,whatsapp_number.ilike.%${sanitizedQ}%`,
+    );
+  }
 
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

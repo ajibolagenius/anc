@@ -119,6 +119,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
         </div>
       </div>
     ),
-    { width: WIDTH, height: HEIGHT },
+    {
+      width: WIDTH,
+      height: HEIGHT,
+      headers: {
+        "cache-control": "public, max-age=86400, stale-while-revalidate=604800",
+      },
+    },
   );
 }

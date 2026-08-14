@@ -61,3 +61,11 @@ export const watchPartySubmissionSchema = z.object({
   isRecurring: z.boolean().default(false),
 });
 export type WatchPartySubmissionInput = z.infer<typeof watchPartySubmissionSchema>;
+
+export const profileUpdateSchema = z.object({
+  jerseySize: z.enum(JERSEY_SIZES).optional(),
+  favoritePlayerCurrent: z.string().trim().max(80).optional(),
+  favoritePlayerAlltime: z.string().trim().max(80).optional(),
+  stateOfResidence: z.enum(NIGERIAN_STATES),
+});
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

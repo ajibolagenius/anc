@@ -50,6 +50,15 @@ export async function addAdmin(formData: FormData) {
     );
   }
 
+  const { data: existingAdmin } = await supabase
+    .from("admin_users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (existingAdmin?.role === "super_admin" && role !== "super_admin") {
+    await assertNotLastSuperAdmin(supabase, user.id);
+  }
+
   const { error } = await supabase
     .from("admin_users")
     .upsert({ id: user.id, display_name: displayName, role }, { onConflict: "id" });

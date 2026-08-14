@@ -8,9 +8,19 @@ function send(res: ServerResponse, statusCode: number, body: unknown): void {
   res.end(JSON.stringify(body));
 }
 
+const MAX_BODY_BYTES = 64 * 1024; // 64 KB limit for JSON payloads
+
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
+  let size = 0;
   const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
+  for await (const chunk of req) {
+    const buf = chunk as Buffer;
+    size += buf.length;
+    if (size > MAX_BODY_BYTES) {
+      throw new Error("Payload too large");
+    }
+    chunks.push(buf);
+  }
   const raw = Buffer.concat(chunks).toString("utf8");
   return raw ? JSON.parse(raw) : {};
 }
