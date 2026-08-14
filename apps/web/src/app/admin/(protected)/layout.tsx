@@ -43,6 +43,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               Matches
             </Link>
+            <Link
+              href="/admin/watch-parties"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Watch Parties
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-4">
