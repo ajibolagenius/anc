@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getAdminSession } from "@/lib/supabase/server-session";
 import { ACTIVITY_TIERS, NIGERIAN_STATES } from "@anc/shared";
 import { approveMember, rejectMember } from "./actions";
 import { inputClassName } from "@/components/form-field";
@@ -26,6 +27,12 @@ export default async function MembersPage({
   const state = params.state ?? "";
   const q = params.q ?? "";
 
+  const admin = await getAdminSession();
+  // Approve/reject need admin+; the bulk PII export needs super_admin —
+  // see requireRole()/role check in ./actions.ts and ./export/route.ts.
+  const canReview = admin?.role === "admin" || admin?.role === "super_admin";
+  const canExport = admin?.role === "super_admin";
+
   const supabase = createServiceRoleClient();
   let query = supabase
     .from("members")
@@ -47,12 +54,14 @@ export default async function MembersPage({
     <div>
       <div className="flex items-center justify-between">
         <PageHeader icon={UsersIcon} title="Members" />
-        <a
-          href={`/admin/members/export?${exportQuery}`}
-          className="rounded-full border border-surface-border px-4 py-2 text-xs text-foreground transition-colors hover:border-arsenal-gold"
-        >
-          Export CSV
-        </a>
+        {canExport && (
+          <a
+            href={`/admin/members/export?${exportQuery}`}
+            className="rounded-full border border-surface-border px-4 py-2 text-xs text-foreground transition-colors hover:border-arsenal-gold"
+          >
+            Export CSV
+          </a>
+        )}
       </div>
 
       <div className="mt-6 flex gap-1 border-b border-surface-border text-sm">
@@ -127,7 +136,9 @@ export default async function MembersPage({
                 <td className="px-4 py-3 text-muted capitalize">{member.activity_tier}</td>
                 <td className="px-4 py-3 text-muted capitalize">{member.registration_status}</td>
                 <td className="px-4 py-3">
-                  {member.registration_status === "pending" ? (
+                  {member.registration_status === "pending" && !canReview ? (
+                    <span className="text-xs text-muted">Reviewing requires admin access</span>
+                  ) : member.registration_status === "pending" ? (
                     <div className="flex items-center gap-2">
                       <form action={approveMember} className="flex items-center gap-1.5">
                         <input type="hidden" name="memberId" value={member.id} />

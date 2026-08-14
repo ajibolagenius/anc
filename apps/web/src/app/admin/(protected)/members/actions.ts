@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 import { getResendClient } from "@/lib/resend-client";
 import { renderMemberApprovedEmailHtml } from "@/lib/email-template";
@@ -10,7 +10,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { ACTIVITY_TIERS, STATE_CODES, type ActivityTier, type NigerianState } from "@anc/shared";
 
 export async function approveMember(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
   const memberId = String(formData.get("memberId"));
   const tier = String(formData.get("activityTier"));
 
@@ -91,7 +91,7 @@ export async function approveMember(formData: FormData) {
 }
 
 export async function rejectMember(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
   const memberId = String(formData.get("memberId"));
 
   const supabase = createServiceRoleClient();

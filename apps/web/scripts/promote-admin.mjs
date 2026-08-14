@@ -8,7 +8,7 @@
 //
 // Usage:
 //   node --env-file=.env.local scripts/promote-admin.mjs <email> "<display name>" [role]
-//   (role defaults to "admin"; pass "super_admin" for the other tier)
+//   (role defaults to "admin"; pass "super_admin" or "moderator" for the other tiers)
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -16,7 +16,7 @@ const [, , email, displayName, role = "admin"] = process.argv;
 
 if (!email || !displayName) {
   console.error(
-    'Usage: node --env-file=.env.local scripts/promote-admin.mjs <email> "<display name>" [admin|super_admin]',
+    'Usage: node --env-file=.env.local scripts/promote-admin.mjs <email> "<display name>" [admin|super_admin|moderator]',
   );
   process.exit(1);
 }

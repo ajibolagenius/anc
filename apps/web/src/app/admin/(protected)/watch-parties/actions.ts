@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 import { watchPartySubmissionSchema } from "@anc/shared";
 
 /** Admin-created listings are auto-approved — trust is implicit for admin-authored content. */
 export async function createWatchParty(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
 
   const parsed = watchPartySubmissionSchema.safeParse({
     matchId: String(formData.get("matchId") ?? "") || undefined,
@@ -49,8 +49,10 @@ export async function createWatchParty(formData: FormData) {
   revalidatePath("/admin/watch-parties");
 }
 
+// Light content moderation of user-submitted listings — the one action tier
+// open to moderators (lowest tier, so this is equivalent to "any admin").
 export async function approveWatchParty(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("moderator");
   const id = String(formData.get("id"));
 
   const supabase = createServiceRoleClient();
@@ -65,7 +67,7 @@ export async function approveWatchParty(formData: FormData) {
 }
 
 export async function rejectWatchParty(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("moderator");
   const id = String(formData.get("id"));
 
   const supabase = createServiceRoleClient();

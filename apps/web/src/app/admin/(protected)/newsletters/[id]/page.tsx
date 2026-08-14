@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getAdminSession } from "@/lib/supabase/server-session";
 import { sendNewsletter } from "./actions";
 
 export default async function NewsletterDetailPage({
@@ -8,6 +9,7 @@ export default async function NewsletterDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const admin = await getAdminSession();
   const supabase = createServiceRoleClient();
 
   const { data: newsletter } = await supabase.from("newsletters").select("*").eq("id", id).single();
@@ -36,7 +38,8 @@ export default async function NewsletterDetailPage({
     {} as Record<string, number>,
   );
 
-  const canSend = newsletter.status === "draft" || newsletter.status === "failed";
+  // Mass-comms send is restricted to super_admin — see requireRole("super_admin") in ./actions.ts.
+  const canSend = (newsletter.status === "draft" || newsletter.status === "failed") && admin?.role === "super_admin";
 
   return (
     <div className="max-w-2xl">

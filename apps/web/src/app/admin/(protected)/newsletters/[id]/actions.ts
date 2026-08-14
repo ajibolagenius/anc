@@ -2,13 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 import { getResendClient } from "@/lib/resend-client";
 import { sendWhatsAppGroupMessage } from "@/lib/wa-bot-client";
 
+// Mass email/WhatsApp blast to the entire matching membership — irreversible
+// once sent, so restricted to super_admin.
 export async function sendNewsletter(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("super_admin");
   const newsletterId = String(formData.get("newsletterId"));
   const supabase = createServiceRoleClient();
 

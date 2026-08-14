@@ -3,10 +3,10 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 
 export async function createGiveaway(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;

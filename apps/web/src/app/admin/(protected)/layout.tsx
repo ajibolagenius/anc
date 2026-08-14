@@ -4,7 +4,7 @@ import { getAdminSession } from "@/lib/supabase/server-session";
 import { SignOutButton } from "@/components/sign-out-button";
 import { SidebarLink } from "@/components/sidebar-link";
 import { SidebarShell } from "@/components/sidebar-shell";
-import { UsersIcon, GiftIcon, MailIcon, CalendarIcon, MapPinIcon, ActivityIcon } from "@/components/icons";
+import { UsersIcon, GiftIcon, MailIcon, CalendarIcon, MapPinIcon, ActivityIcon, ShieldIcon } from "@/components/icons";
 import { BotHealth } from "./_components/bot-health";
 
 const NAV = [
@@ -16,12 +16,18 @@ const NAV = [
   { href: "/admin/automations", label: "Automations", icon: <ActivityIcon className="h-4 w-4" /> },
 ];
 
+const SUPER_ADMIN_NAV = [
+  { href: "/admin/admin-users", label: "Admin Users", icon: <ShieldIcon className="h-4 w-4" /> },
+];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await getAdminSession();
 
   if (!admin) {
     redirect("/admin/login");
   }
+
+  const nav = admin.role === "super_admin" ? [...NAV, ...SUPER_ADMIN_NAV] : NAV;
 
   return (
     <div className="flex min-h-full flex-1 flex-col md:flex-row">
@@ -31,7 +37,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             ANC Admin
           </Link>
           <nav className="mt-8 flex flex-col gap-1">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <SidebarLink key={item.href} {...item} />
             ))}
           </nav>

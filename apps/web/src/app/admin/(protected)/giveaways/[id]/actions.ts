@@ -3,7 +3,7 @@
 import { randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 
 /** Unbiased Fisher-Yates shuffle using crypto.randomInt — never Math.random() or `ORDER BY random()` for a draw that needs to be defensible. */
 function secureShuffle<T>(items: T[]): T[] {
@@ -41,7 +41,7 @@ async function getEligibleMemberIds(
 }
 
 export async function openGiveaway(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
   const giveawayId = String(formData.get("giveawayId"));
   const supabase = createServiceRoleClient();
 
@@ -60,7 +60,7 @@ export async function openGiveaway(formData: FormData) {
 }
 
 export async function closeGiveaway(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
   const giveawayId = String(formData.get("giveawayId"));
   const supabase = createServiceRoleClient();
 
@@ -79,7 +79,7 @@ export async function closeGiveaway(formData: FormData) {
 }
 
 export async function markCompleted(formData: FormData) {
-  await requireAdmin();
+  await requireRole("admin");
   const giveawayId = String(formData.get("giveawayId"));
   const supabase = createServiceRoleClient();
 
@@ -88,8 +88,10 @@ export async function markCompleted(formData: FormData) {
   revalidatePath(`/admin/giveaways/${giveawayId}`);
 }
 
+// Prize-payout decision — restricted to super_admin, unlike the rest of the
+// giveaway lifecycle (create/open/close/markCompleted are admin-level).
 export async function drawWinners(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("super_admin");
   const giveawayId = String(formData.get("giveawayId"));
   const count = Math.max(1, Number(formData.get("winnerCount") ?? 1));
 
@@ -150,8 +152,9 @@ export async function drawWinners(formData: FormData) {
   revalidatePath(`/admin/giveaways/${giveawayId}`);
 }
 
+// Same payout-integrity concern as drawWinners() above — super_admin only.
 export async function disqualifyAndRedraw(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("super_admin");
   const winnerId = String(formData.get("winnerId"));
   const reason = String(formData.get("reason") ?? "").trim() || "Unreachable / ineligible";
 

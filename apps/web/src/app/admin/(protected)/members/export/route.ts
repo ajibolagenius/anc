@@ -29,6 +29,10 @@ const COLUMNS = [
 export async function GET(request: NextRequest) {
   const admin = await getAdminSession();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Full PII dump — restricted to super_admin, same tier as mass-comms actions.
+  if (admin.role !== "super_admin") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const { searchParams } = request.nextUrl;
   const status = searchParams.get("status") ?? "all";

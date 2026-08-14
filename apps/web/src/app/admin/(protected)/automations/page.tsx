@@ -1,9 +1,11 @@
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getAdminSession } from "@/lib/supabase/server-session";
 import { AutomationTestButtons } from "./_test-buttons";
 import { PageHeader } from "@/components/page-header";
 import { ActivityIcon } from "@/components/icons";
 
 export default async function AutomationsPage() {
+  const admin = await getAdminSession();
   const supabase = createServiceRoleClient();
 
   const { data: recentBirthdays } = await supabase
@@ -42,7 +44,13 @@ export default async function AutomationsPage() {
         for QA — both are idempotent, so a test-send today won't double-send when the real cron fires later.
       </p>
 
-      <AutomationTestButtons />
+      {admin?.role === "super_admin" ? (
+        <AutomationTestButtons />
+      ) : (
+        <p className="mt-6 rounded-xl border border-surface-border p-5 text-xs text-muted max-w-2xl">
+          Manually triggering these jobs is restricted to super admins.
+        </p>
+      )}
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <div>

@@ -36,11 +36,13 @@ export async function createSessionClient() {
   );
 }
 
+export type AdminRole = "super_admin" | "admin" | "moderator";
+
 export type AdminSession = {
   userId: string;
   email: string;
   displayName: string;
-  role: "super_admin" | "admin";
+  role: AdminRole;
 };
 
 /**

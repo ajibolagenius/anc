@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getAdminSession } from "@/lib/supabase/server-session";
 import {
   openGiveaway,
   closeGiveaway,
@@ -14,6 +15,11 @@ export default async function GiveawayDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const admin = await getAdminSession();
+  // Lifecycle actions need admin+; the prize draw itself needs super_admin —
+  // see requireRole() calls in ./actions.ts.
+  const canManage = admin?.role === "admin" || admin?.role === "super_admin";
+  const canDraw = admin?.role === "super_admin";
   const supabase = createServiceRoleClient();
 
   const { data: giveaway } = await supabase.from("giveaways").select("*").eq("id", id).single();
@@ -56,7 +62,7 @@ export default async function GiveawayDetailPage({
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
-        {giveaway.status === "draft" && (
+        {giveaway.status === "draft" && canManage && (
           <form action={openGiveaway}>
             <input type="hidden" name="giveawayId" value={id} />
             <button type="submit" className="rounded-full bg-whatsapp-green px-5 py-2.5 text-sm font-medium text-arsenal-navy-deep">
@@ -64,7 +70,7 @@ export default async function GiveawayDetailPage({
             </button>
           </form>
         )}
-        {giveaway.status === "open" && (
+        {giveaway.status === "open" && canManage && (
           <form action={closeGiveaway}>
             <input type="hidden" name="giveawayId" value={id} />
             <button type="submit" className="rounded-full bg-arsenal-red px-5 py-2.5 text-sm font-medium text-white">
@@ -72,7 +78,7 @@ export default async function GiveawayDetailPage({
             </button>
           </form>
         )}
-        {giveaway.status === "closed" && (
+        {giveaway.status === "closed" && canDraw && (
           <form action={drawWinners} className="flex items-center gap-2">
             <input type="hidden" name="giveawayId" value={id} />
             <label className="text-sm text-muted">Winners:</label>
@@ -89,7 +95,10 @@ export default async function GiveawayDetailPage({
             </button>
           </form>
         )}
-        {giveaway.status === "winner_selected" && (
+        {giveaway.status === "closed" && !canDraw && (
+          <p className="text-xs text-muted">Drawing winners is restricted to super admins.</p>
+        )}
+        {giveaway.status === "winner_selected" && canManage && (
           <form action={markCompleted}>
             <input type="hidden" name="giveawayId" value={id} />
             <button type="submit" className="rounded-full border border-surface-border px-5 py-2.5 text-sm text-foreground hover:border-arsenal-gold">
@@ -130,7 +139,7 @@ export default async function GiveawayDetailPage({
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {!w.disqualified_at && (
+                      {!w.disqualified_at && canDraw && (
                         <form action={disqualifyAndRedraw} className="flex items-center gap-1.5">
                           <input type="hidden" name="winnerId" value={w.id} />
                           <input

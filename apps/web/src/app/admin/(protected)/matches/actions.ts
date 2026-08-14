@@ -3,11 +3,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 
 export async function createMatch(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
 
   const opponent = String(formData.get("opponent") ?? "").trim();
   const kickoffAt = String(formData.get("kickoffAt") ?? "");

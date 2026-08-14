@@ -3,12 +3,12 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 import { renderNewsletterEmailHtml } from "@/lib/email-template";
 
 export async function createNewsletter(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
 
   const subject = String(formData.get("subject") ?? "").trim();
   const bodyText = String(formData.get("bodyText") ?? "").trim();

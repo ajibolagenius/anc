@@ -1,4 +1,5 @@
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getAdminSession } from "@/lib/supabase/server-session";
 import { NIGERIAN_STATES } from "@anc/shared";
 import { inputClassName } from "@/components/form-field";
 import { createWatchParty, approveWatchParty, rejectWatchParty } from "./actions";
@@ -6,6 +7,11 @@ import { PageHeader } from "@/components/page-header";
 import { MapPinIcon } from "@/components/icons";
 
 export default async function AdminWatchPartiesPage() {
+  const admin = await getAdminSession();
+  // Posting admin-authored (auto-approved) listings needs admin+; approving
+  // or rejecting user submissions is open to moderators too — see
+  // requireRole() calls in ./actions.ts.
+  const canCreate = admin?.role === "admin" || admin?.role === "super_admin";
   const supabase = createServiceRoleClient();
 
   const { data: matches } = await supabase
@@ -32,43 +38,45 @@ export default async function AdminWatchPartiesPage() {
     <div>
       <PageHeader icon={MapPinIcon} title="Watch Parties" spotlight="var(--arsenal-gold)" />
 
-      <form action={createWatchParty} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
-        <h2 className="text-sm font-medium text-foreground/90">New listing (auto-approved)</h2>
-        <select name="matchId" defaultValue="" className={inputClassName}>
-          <option value="">Not tied to a specific fixture (recurring venue)</option>
-          {matches?.map((m) => (
-            <option key={m.id} value={m.id}>
-              vs {m.opponent} — {new Date(m.kickoff_at).toLocaleDateString()}
+      {canCreate && (
+        <form action={createWatchParty} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
+          <h2 className="text-sm font-medium text-foreground/90">New listing (auto-approved)</h2>
+          <select name="matchId" defaultValue="" className={inputClassName}>
+            <option value="">Not tied to a specific fixture (recurring venue)</option>
+            {matches?.map((m) => (
+              <option key={m.id} value={m.id}>
+                vs {m.opponent} — {new Date(m.kickoff_at).toLocaleDateString()}
+              </option>
+            ))}
+          </select>
+          <select name="state" required defaultValue="" className={inputClassName}>
+            <option value="" disabled>
+              State
             </option>
-          ))}
-        </select>
-        <select name="state" required defaultValue="" className={inputClassName}>
-          <option value="" disabled>
-            State
-          </option>
-          {NIGERIAN_STATES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <input name="city" required placeholder="City" className={inputClassName} />
-        <input name="venueName" required placeholder="Venue name" className={inputClassName} />
-        <input name="address" placeholder="Address (optional)" className={inputClassName} />
-        <input name="mapLink" placeholder="Map link (optional)" className={inputClassName} />
-        <input name="contactName" placeholder="Contact name (optional)" className={inputClassName} />
-        <input name="contactWhatsapp" placeholder="Contact WhatsApp (optional)" className={inputClassName} />
-        <label className="flex items-center gap-1.5 text-sm text-foreground/90">
-          <input type="checkbox" name="isRecurring" className="h-3.5 w-3.5" />
-          Recurring venue (not just for one fixture)
-        </label>
-        <button
-          type="submit"
-          className="self-start rounded-full bg-arsenal-red px-6 py-2.5 text-sm font-medium text-white hover:scale-[1.02]"
-        >
-          Post listing
-        </button>
-      </form>
+            {NIGERIAN_STATES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <input name="city" required placeholder="City" className={inputClassName} />
+          <input name="venueName" required placeholder="Venue name" className={inputClassName} />
+          <input name="address" placeholder="Address (optional)" className={inputClassName} />
+          <input name="mapLink" placeholder="Map link (optional)" className={inputClassName} />
+          <input name="contactName" placeholder="Contact name (optional)" className={inputClassName} />
+          <input name="contactWhatsapp" placeholder="Contact WhatsApp (optional)" className={inputClassName} />
+          <label className="flex items-center gap-1.5 text-sm text-foreground/90">
+            <input type="checkbox" name="isRecurring" className="h-3.5 w-3.5" />
+            Recurring venue (not just for one fixture)
+          </label>
+          <button
+            type="submit"
+            className="self-start rounded-full bg-arsenal-red px-6 py-2.5 text-sm font-medium text-white hover:scale-[1.02]"
+          >
+            Post listing
+          </button>
+        </form>
+      )}
 
       {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
 

@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit-log";
 import { computePredictionPoints } from "@anc/shared";
 
 export async function enterResult(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireRole("admin");
 
   const matchId = String(formData.get("matchId"));
   const actualHomeScore = Number(formData.get("actualHomeScore"));
