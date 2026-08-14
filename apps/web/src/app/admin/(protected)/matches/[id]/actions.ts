@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin-guard";
+import { logAdminAction } from "@/lib/admin-audit-log";
 import { computePredictionPoints } from "@anc/shared";
 
 export async function enterResult(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const matchId = String(formData.get("matchId"));
   const actualHomeScore = Number(formData.get("actualHomeScore"));
@@ -49,6 +50,13 @@ export async function enterResult(formData: FormData) {
     await supabase.from("predictions").update({ points_awarded: points }).eq("id", prediction.id);
   }
 
+  await logAdminAction({
+    adminId: admin.userId,
+    action: "match_result_entered",
+    entityType: "match",
+    entityId: matchId,
+    metadata: { actualHomeScore, actualAwayScore, actualFirstScorer, predictionsScored: predictions?.length ?? 0 },
+  });
   revalidatePath(`/admin/matches/${matchId}`);
   revalidatePath("/admin/matches");
   revalidatePath("/portal/predictions");

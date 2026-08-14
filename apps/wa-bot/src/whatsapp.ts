@@ -7,6 +7,7 @@ import { Boom } from "@hapi/boom";
 import pino from "pino";
 import qrcode from "qrcode-terminal";
 import { config } from "./config.js";
+import { Sentry } from "./sentry.js";
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? "warn" });
 
@@ -31,12 +32,19 @@ export function getStatus(): BotStatus {
  * ANC is a low-volume bot by design (a handful of messages a day — see
  * PRD §9 on WhatsApp session fragility). Never call this in a loop; always
  * batch same-event messages into one send.
+ *
+ * `mentionPhoneNumbers` (E.164, e.g. "+2348011111111") lets callers
+ * @-mention specific members — used for batched birthday shoutouts. The
+ * message text must already contain "@<digits-without-plus>" for each
+ * number; WhatsApp clients match those against the `mentions` JID array to
+ * render the highlighted chip.
  */
-export async function sendGroupMessage(text: string): Promise<void> {
+export async function sendGroupMessage(text: string, mentionPhoneNumbers: string[] = []): Promise<void> {
   if (!sock || status.connection !== "open") {
     throw new Error("WhatsApp socket is not connected");
   }
-  await sock.sendMessage(config.groupJid, { text });
+  const mentions = mentionPhoneNumbers.map((n) => `${n.replace(/^\+/, "")}@s.whatsapp.net`);
+  await sock.sendMessage(config.groupJid, { text, mentions });
 }
 
 export async function connectToWhatsApp(): Promise<void> {
@@ -78,6 +86,10 @@ export async function connectToWhatsApp(): Promise<void> {
         console.error(
           "wa-bot was logged out. Delete the auth directory and re-scan the QR code to re-pair.",
         );
+        // Logged-out is the one disconnect state that never self-heals — an
+        // admin must physically re-scan the QR code, so this is the signal
+        // that actually warrants paging someone (see runbook).
+        Sentry.captureMessage("wa-bot logged out — needs QR re-pair", "error");
         return;
       }
 

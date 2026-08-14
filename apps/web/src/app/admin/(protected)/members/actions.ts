@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin-guard";
+import { logAdminAction } from "@/lib/admin-audit-log";
 import { ACTIVITY_TIERS, type ActivityTier } from "@anc/shared";
 
 export async function approveMember(formData: FormData) {
@@ -26,6 +27,7 @@ export async function approveMember(formData: FormData) {
     .eq("id", memberId);
 
   if (error) throw new Error(error.message);
+  await logAdminAction({ adminId: admin.userId, action: "member_approved", entityType: "member", entityId: memberId, metadata: { tier } });
   revalidatePath("/admin/members");
 }
 
@@ -44,5 +46,6 @@ export async function rejectMember(formData: FormData) {
     .eq("id", memberId);
 
   if (error) throw new Error(error.message);
+  await logAdminAction({ adminId: admin.userId, action: "member_rejected", entityType: "member", entityId: memberId });
   revalidatePath("/admin/members");
 }

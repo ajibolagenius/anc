@@ -44,12 +44,13 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
     }
 
     if (req.method === "POST" && req.url === "/internal/send-group-message") {
-      const body = (await readJsonBody(req)) as { text?: unknown };
+      const body = (await readJsonBody(req)) as { text?: unknown; mentions?: unknown };
       if (typeof body.text !== "string" || body.text.trim().length === 0) {
         send(res, 400, { error: "Body must include a non-empty 'text' string" });
         return;
       }
-      await sendGroupMessage(body.text);
+      const mentions = Array.isArray(body.mentions) ? body.mentions.filter((m): m is string => typeof m === "string") : [];
+      await sendGroupMessage(body.text, mentions);
       send(res, 200, { sent: true });
       return;
     }

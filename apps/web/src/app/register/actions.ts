@@ -3,6 +3,7 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { registrationSchema } from "@anc/shared";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export type RegisterState = {
   status: "idle" | "success" | "error";
@@ -18,6 +19,12 @@ export async function registerMember(
   // field on a form usually do.
   if (formData.get("company_website")) {
     return { status: "success" }; // pretend success, don't tip off the bot
+  }
+
+  const ip = await getClientIp();
+  const allowed = await checkRateLimit(`register:${ip}`, { windowSeconds: 3600, max: 5 });
+  if (!allowed) {
+    return { status: "error", message: "Too many attempts from your network. Please try again in an hour." };
   }
 
   const rawPhone = String(formData.get("whatsappNumber") ?? "");

@@ -4,9 +4,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin-guard";
+import { logAdminAction } from "@/lib/admin-audit-log";
 
 export async function createMatch(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const opponent = String(formData.get("opponent") ?? "").trim();
   const kickoffAt = String(formData.get("kickoffAt") ?? "");
@@ -28,6 +29,7 @@ export async function createMatch(formData: FormData) {
 
   if (error) throw new Error(error.message);
 
+  await logAdminAction({ adminId: admin.userId, action: "match_created", entityType: "match", entityId: data.id, metadata: { opponent } });
   revalidatePath("/admin/matches");
   redirect(`/admin/matches/${data.id}`);
 }

@@ -150,8 +150,11 @@ export default function RegisterPage() {
           />
           <span>
             I consent to ANC storing my details above to manage my membership,
-            send me birthday wishes, and run giveaways. I can ask for this to
-            be deleted at any time.
+            send me birthday wishes, and run giveaways, per the{" "}
+            <a href="/privacy" target="_blank" rel="noreferrer" className="text-foreground underline hover:text-arsenal-gold">
+              privacy notice
+            </a>
+            . I can delete this data at any time from my member portal.
           </span>
         </label>
 

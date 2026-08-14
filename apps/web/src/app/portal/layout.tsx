@@ -42,6 +42,12 @@ export default async function PortalLayout({ children }: { children: React.React
             >
               Watch Parties
             </Link>
+            <Link
+              href="/portal/settings"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Settings
+            </Link>
           </nav>
         </div>
         <div className="border-t border-surface-border pt-4 text-xs text-muted">

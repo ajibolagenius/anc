@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin-guard";
+import { logAdminAction } from "@/lib/admin-audit-log";
 import { renderNewsletterEmailHtml } from "@/lib/email-template";
 
 export async function createNewsletter(formData: FormData) {
@@ -41,6 +42,7 @@ export async function createNewsletter(formData: FormData) {
 
   if (error) throw new Error(error.message);
 
+  await logAdminAction({ adminId: admin.userId, action: "newsletter_created", entityType: "newsletter", entityId: data.id, metadata: { subject } });
   revalidatePath("/admin/newsletters");
   redirect(`/admin/newsletters/${data.id}`);
 }

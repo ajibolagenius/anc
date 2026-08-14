@@ -453,6 +453,7 @@ columns.
   number (never an admin's personal number), low message volume (batched,
   not per-person), `/internal/health` endpoint monitored via Sentry/alerting
   so an admin is notified to re-scan the QR pairing code if disconnected.
+  Full recovery steps for every failure mode: `apps/wa-bot/RUNBOOK.md`.
 - **Rate limits at scale**: Resend free tier (~100/day, ~3,000/month) may be
   exceeded by a single newsletter blast once approved membership passes
   ~100 — budget for a paid tier as the community grows.

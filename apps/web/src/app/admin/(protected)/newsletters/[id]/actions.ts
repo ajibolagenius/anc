@@ -3,11 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin-guard";
+import { logAdminAction } from "@/lib/admin-audit-log";
 import { getResendClient } from "@/lib/resend-client";
 import { sendWhatsAppGroupMessage } from "@/lib/wa-bot-client";
 
 export async function sendNewsletter(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const newsletterId = String(formData.get("newsletterId"));
   const supabase = createServiceRoleClient();
 
@@ -99,6 +100,13 @@ export async function sendNewsletter(formData: FormData) {
     .update({ status: "sent", sent_at: new Date().toISOString() })
     .eq("id", newsletterId);
 
+  await logAdminAction({
+    adminId: admin.userId,
+    action: "newsletter_sent",
+    entityType: "newsletter",
+    entityId: newsletterId,
+    metadata: { recipientCount: recipients.length },
+  });
   revalidatePath(`/admin/newsletters/${newsletterId}`);
   revalidatePath("/admin/newsletters");
 }

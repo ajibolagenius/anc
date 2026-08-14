@@ -125,7 +125,14 @@ export default function Home() {
       <footer className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-10">
         <div className="flex flex-col gap-2 border-t border-surface-border pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <span>&copy; {new Date().getFullYear()} Arsenal Nigeria Community. Fan-run, not affiliated with Arsenal FC.</span>
-          <span>Built with love by Ajibola Don_Genius</span>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <a href="https://ajibolagenius.vercel.app" target="_blank" rel="noreferrer" className="hover:text-foreground">
+              Built with love by Ajibola Don_Genius
+            </a>
+          </div>
         </div>
       </footer>
     </div>
