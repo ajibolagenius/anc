@@ -37,10 +37,13 @@ export function MarketingFooter() {
             </div>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted">Legal</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">Legal &amp; System</p>
             <div className="mt-3.5 flex flex-col gap-2.5 text-[13.5px]">
               <Link href="/privacy" className="text-foreground/90 hover:text-foreground">
                 Privacy notice
+              </Link>
+              <Link href="/components" className="text-foreground/90 hover:text-foreground">
+                UI Components
               </Link>
             </div>
           </div>
