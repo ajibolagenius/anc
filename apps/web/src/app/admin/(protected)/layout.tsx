@@ -37,6 +37,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               Newsletters
             </Link>
+            <Link
+              href="/admin/matches"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Matches
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-4">

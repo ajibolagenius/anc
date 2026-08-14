@@ -24,6 +24,18 @@ export default async function PortalLayout({ children }: { children: React.React
             >
               Giveaways
             </Link>
+            <Link
+              href="/portal/predictions"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Predictions
+            </Link>
+            <Link
+              href="/portal/leaderboard"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Leaderboard
+            </Link>
           </nav>
         </div>
         <div className="border-t border-surface-border pt-4 text-xs text-muted">
