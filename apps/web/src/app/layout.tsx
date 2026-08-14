@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Manrope } from "next/font/google";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const display = Bebas_Neue({
@@ -22,7 +23,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

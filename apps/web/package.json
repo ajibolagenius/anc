@@ -12,9 +12,11 @@
   "dependencies": {
     "@anc/shared": "workspace:*",
     "@anthropic-ai/sdk": "^0.116.0",
+    "@phosphor-icons/react": "^2.1.10",
     "@sentry/nextjs": "^10.70.0",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",
+    "clsx": "^2.1.1",
     "libphonenumber-js": "^1.11.9",
     "next": "16.3.0",
     "react": "19.2.8",
@@ -22,6 +24,7 @@
     "resend": "^4.0.0",
     "rss-parser": "^3.13.0",
     "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

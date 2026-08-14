@@ -11,14 +11,21 @@
 
   --background: var(--arsenal-navy-deep);
   --surface: #0a1f42;
+  --surface-2: rgba(255, 255, 255, 0.08);
   --surface-border: rgba(255, 255, 255, 0.08);
   --foreground: #f5f3ee;
   --muted: #aab4c6;
+
+  /* Elevated-overlay surfaces — modals sit on a slightly darker/bluer navy
+     than toasts, giving modals a "serious" tone and toasts a "friendlier" one. */
+  --overlay-surface: #050f24;
+  --overlay-surface-soft: #0b1f42;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-surface-border: var(--surface-border);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -28,8 +35,19 @@
   --color-arsenal-navy: var(--arsenal-navy);
   --color-arsenal-navy-deep: var(--arsenal-navy-deep);
   --color-whatsapp-green: var(--whatsapp-green);
+  --color-overlay-surface: var(--overlay-surface);
+  --color-overlay-surface-soft: var(--overlay-surface-soft);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
 }
 
 body {
@@ -117,4 +135,31 @@ body {
 }
 .animate-float {
   animation: float-slow 5s ease-in-out infinite;
+}
+
+/* Spinner (Button pending state, login sending state, giveaway draw). */
+@keyframes anc-spin {
+  to { transform: rotate(360deg); }
+}
+.animate-anc-spin {
+  animation: anc-spin 0.7s linear infinite;
+}
+
+/* Toast slide-up-and-fade-in on mount. */
+@keyframes anc-toast-in {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.animate-anc-toast-in {
+  animation: anc-toast-in 0.25s ease-out;
+}
+
+/* Landing-page ticker: duplicate the content once and scroll exactly one
+   copy's width for a seamless loop. */
+@keyframes anc-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-anc-marquee {
+  animation: anc-marquee 26s linear infinite;
 }
