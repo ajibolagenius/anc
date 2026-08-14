@@ -31,6 +31,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               Giveaways
             </Link>
+            <Link
+              href="/admin/newsletters"
+              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
+            >
+              Newsletters
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-4">

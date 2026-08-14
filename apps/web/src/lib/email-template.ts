@@ -1,0 +1,24 @@
+import { emailSignatureHtml } from "@anc/shared";
+
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/** Wraps admin-authored plain text in a minimally-branded HTML shell — no rich-text editor, just paragraphs + the shared signature. Keeps the composer dead simple while still feeling on-brand. */
+export function renderNewsletterEmailHtml({ subject, bodyText }: { subject: string; bodyText: string }): string {
+  const paragraphs = bodyText
+    .split(/\n{2,}/)
+    .map((p) => `<p style="margin:0 0 16px;line-height:1.6;">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`)
+    .join("");
+
+  return `
+    <div style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 20px; color: #171717;">
+      <div style="font-weight: 700; letter-spacing: 0.05em; color: #DB0007; font-size: 13px; text-transform: uppercase; margin-bottom: 8px;">
+        Arsenal Nigeria Community
+      </div>
+      <h1 style="font-size: 22px; margin: 0 0 20px; color: #023474;">${escapeHtml(subject)}</h1>
+      ${paragraphs}
+      ${emailSignatureHtml()}
+    </div>
+  `.trim();
+}
