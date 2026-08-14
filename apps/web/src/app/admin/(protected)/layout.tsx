@@ -2,7 +2,19 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getAdminSession } from "@/lib/supabase/server-session";
 import { SignOutButton } from "@/components/sign-out-button";
+import { SidebarLink } from "@/components/sidebar-link";
+import { SidebarShell } from "@/components/sidebar-shell";
+import { UsersIcon, GiftIcon, MailIcon, CalendarIcon, MapPinIcon, ActivityIcon } from "@/components/icons";
 import { BotHealth } from "./_components/bot-health";
+
+const NAV = [
+  { href: "/admin/members", label: "Members", icon: <UsersIcon className="h-4 w-4" /> },
+  { href: "/admin/giveaways", label: "Giveaways", icon: <GiftIcon className="h-4 w-4" /> },
+  { href: "/admin/newsletters", label: "Newsletters", icon: <MailIcon className="h-4 w-4" /> },
+  { href: "/admin/matches", label: "Matches", icon: <CalendarIcon className="h-4 w-4" /> },
+  { href: "/admin/watch-parties", label: "Watch Parties", icon: <MapPinIcon className="h-4 w-4" /> },
+  { href: "/admin/automations", label: "Automations", icon: <ActivityIcon className="h-4 w-4" /> },
+];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await getAdminSession();
@@ -12,49 +24,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-full flex-1">
-      <aside className="flex w-56 shrink-0 flex-col justify-between border-r border-surface-border px-5 py-6">
+    <div className="flex min-h-full flex-1 flex-col md:flex-row">
+      <SidebarShell logo={<Link href="/admin" className="font-display text-xl text-foreground">ANC Admin</Link>}>
         <div>
           <Link href="/admin" className="font-display text-xl text-foreground">
             ANC Admin
           </Link>
-          <nav className="mt-8 flex flex-col gap-1 text-sm">
-            <Link
-              href="/admin/members"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Members
-            </Link>
-            <Link
-              href="/admin/giveaways"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Giveaways
-            </Link>
-            <Link
-              href="/admin/newsletters"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Newsletters
-            </Link>
-            <Link
-              href="/admin/matches"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Matches
-            </Link>
-            <Link
-              href="/admin/watch-parties"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Watch Parties
-            </Link>
-            <Link
-              href="/admin/automations"
-              className="rounded-lg px-3 py-2 text-foreground/90 transition-colors hover:bg-white/5"
-            >
-              Automations
-            </Link>
+          <nav className="mt-8 flex flex-col gap-1">
+            {NAV.map((item) => (
+              <SidebarLink key={item.href} {...item} />
+            ))}
           </nav>
         </div>
         <div className="flex flex-col gap-4">
@@ -67,8 +46,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </div>
           </div>
         </div>
-      </aside>
-      <main className="flex-1 px-8 py-8">{children}</main>
+      </SidebarShell>
+      <main className="flex-1 px-6 py-8 sm:px-8">{children}</main>
     </div>
   );
 }

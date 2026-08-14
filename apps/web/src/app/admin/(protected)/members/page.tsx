@@ -3,6 +3,8 @@ import { createServiceRoleClient } from "@/lib/supabase/server";
 import { ACTIVITY_TIERS, NIGERIAN_STATES } from "@anc/shared";
 import { approveMember, rejectMember } from "./actions";
 import { inputClassName } from "@/components/form-field";
+import { PageHeader } from "@/components/page-header";
+import { UsersIcon } from "@/components/icons";
 
 type SearchParams = {
   status?: string;
@@ -44,7 +46,7 @@ export default async function MembersPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl text-foreground">Members</h1>
+        <PageHeader icon={UsersIcon} title="Members" />
         <a
           href={`/admin/members/export?${exportQuery}`}
           className="rounded-full border border-surface-border px-4 py-2 text-xs text-foreground transition-colors hover:border-arsenal-gold"
@@ -99,7 +101,7 @@ export default async function MembersPage({
 
       {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-surface-border">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-surface-border">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>

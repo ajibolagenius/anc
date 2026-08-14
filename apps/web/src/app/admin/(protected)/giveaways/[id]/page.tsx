@@ -102,7 +102,7 @@ export default async function GiveawayDetailPage({
       {winners && winners.length > 0 && (
         <div className="mt-10">
           <h2 className="font-display text-xl text-foreground">Winners</h2>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-surface-border">
+          <div className="mt-3 overflow-x-auto rounded-2xl border border-surface-border">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
                 <tr>
@@ -156,7 +156,7 @@ export default async function GiveawayDetailPage({
         <h2 className="font-display text-xl text-foreground">
           Entries <span className="text-sm font-normal text-muted">({entries?.length ?? 0})</span>
         </h2>
-        <div className="mt-3 max-h-72 overflow-y-auto rounded-xl border border-surface-border">
+        <div className="mt-3 max-h-72 overflow-y-auto rounded-2xl border border-surface-border">
           <table className="w-full text-left text-sm">
             <thead className="sticky top-0 border-b border-surface-border bg-background text-xs uppercase tracking-wide text-muted">
               <tr>

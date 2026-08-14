@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { inputClassName } from "@/components/form-field";
 import { createMatch } from "./actions";
+import { PageHeader } from "@/components/page-header";
+import { CalendarIcon } from "@/components/icons";
 
 export default async function MatchesPage() {
   const supabase = createServiceRoleClient();
@@ -12,9 +14,9 @@ export default async function MatchesPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Matches</h1>
+      <PageHeader icon={CalendarIcon} title="Matches" />
 
-      <form action={createMatch} className="mt-6 flex flex-col gap-4 rounded-xl border border-surface-border p-5 max-w-xl">
+      <form action={createMatch} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
         <h2 className="text-sm font-medium text-foreground/90">New fixture</h2>
         <input name="opponent" required placeholder="Opponent (e.g. Chelsea)" className={inputClassName} />
         <input name="competition" placeholder="Competition (optional, e.g. Premier League)" className={inputClassName} />
@@ -32,7 +34,7 @@ export default async function MatchesPage() {
 
       {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-surface-border">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-surface-border">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>

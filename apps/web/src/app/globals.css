@@ -77,3 +77,44 @@ body {
 .animate-fade-in-up {
   animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* Soft radial spotlight behind icon tiles / section anchors — the ANC take
+   on the colorful blob illustrations whatsapp.com uses behind its feature
+   icons, in Arsenal red/gold instead of WhatsApp green/blue/purple. */
+.icon-spotlight {
+  position: relative;
+}
+.icon-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  background: radial-gradient(circle, var(--spotlight-color, var(--arsenal-red)) 0%, transparent 70%);
+  opacity: 0.25;
+  filter: blur(12px);
+}
+
+/* Large soft section-divider blobs — used sparingly between sections to
+   break up the dark background the way whatsapp.com uses colorful curves. */
+.section-glow-red {
+  background-image: radial-gradient(ellipse 45% 40% at 20% 0%, rgba(219, 0, 7, 0.18), transparent);
+}
+.section-glow-gold {
+  background-image: radial-gradient(ellipse 45% 40% at 80% 100%, rgba(156, 130, 74, 0.18), transparent);
+}
+
+/* Gradient numerals for stat blocks. */
+.stat-gradient {
+  background: linear-gradient(135deg, var(--arsenal-red-bright), var(--arsenal-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float-slow 5s ease-in-out infinite;
+}

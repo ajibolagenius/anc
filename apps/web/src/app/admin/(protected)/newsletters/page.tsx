@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/page-header";
+import { MailIcon } from "@/components/icons";
 
 export default async function NewslettersPage() {
   const supabase = createServiceRoleClient();
@@ -11,7 +13,7 @@ export default async function NewslettersPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl text-foreground">Newsletters</h1>
+        <PageHeader icon={MailIcon} title="Newsletters" />
         <Link
           href="/admin/newsletters/new"
           className="rounded-full bg-arsenal-red px-5 py-2.5 text-sm font-medium text-white hover:scale-[1.02]"
@@ -22,7 +24,7 @@ export default async function NewslettersPage() {
 
       {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-surface-border">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-surface-border">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>

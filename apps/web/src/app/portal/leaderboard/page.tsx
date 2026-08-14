@@ -1,4 +1,8 @@
 import { createSessionClient } from "@/lib/supabase/server-session";
+import { PageHeader } from "@/components/page-header";
+import { TrophyIcon } from "@/components/icons";
+
+const MEDALS = ["🥇", "🥈", "🥉"];
 
 export default async function LeaderboardPage() {
   const supabase = await createSessionClient();
@@ -35,10 +39,9 @@ export default async function LeaderboardPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="font-display text-3xl text-foreground">Leaderboard</h1>
-      <p className="mt-2 text-sm text-muted">Points across every scored match this season.</p>
+      <PageHeader icon={TrophyIcon} title="Leaderboard" subtitle="Points across every scored match this season." spotlight="var(--arsenal-gold)" />
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-surface-border">
+      <div className="mt-8 overflow-hidden rounded-2xl border border-surface-border bg-surface/40">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>
@@ -51,7 +54,7 @@ export default async function LeaderboardPage() {
           <tbody>
             {leaderboard.map((row, i) => (
               <tr key={row.memberId} className="border-b border-surface-border/60 last:border-0">
-                <td className="px-4 py-3 text-muted">{i + 1}</td>
+                <td className="px-4 py-3 text-muted">{MEDALS[i] ?? i + 1}</td>
                 <td className="px-4 py-3 text-foreground">{row.name}</td>
                 <td className="px-4 py-3 text-muted">{row.matches}</td>
                 <td className="px-4 py-3 font-medium text-arsenal-gold">{row.points}</td>

@@ -53,7 +53,7 @@ export default function NewNewsletterPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-surface-border p-4">
+        <div className="rounded-2xl border border-surface-border p-4">
           <label className="flex items-center gap-2.5 text-sm text-foreground/90">
             <input type="checkbox" name="alsoPostToWhatsapp" className="h-4 w-4" />
             Also post a summary to the WhatsApp group

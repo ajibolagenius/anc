@@ -1,5 +1,7 @@
 import { createSessionClient } from "@/lib/supabase/server-session";
 import { inputClassName } from "@/components/form-field";
+import { PageHeader } from "@/components/page-header";
+import { CalendarIcon } from "@/components/icons";
 import { submitPrediction } from "./actions";
 
 export default async function MemberPredictionsPage() {
@@ -30,14 +32,14 @@ export default async function MemberPredictionsPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-3xl text-foreground">Predictions</h1>
+      <PageHeader icon={CalendarIcon} title="Predictions" subtitle="Call the scoreline and first scorer — banter fuel, not fantasy football." />
 
-      <h2 className="mt-8 font-display text-xl text-foreground">Upcoming</h2>
+      <h2 className="mt-10 font-display text-xl text-foreground">Upcoming</h2>
       <div className="mt-3 flex flex-col gap-4">
         {upcoming.map((match) => {
           const mine = byMatchId.get(match.id);
           return (
-            <div key={match.id} className="rounded-xl border border-surface-border p-5">
+            <div key={match.id} className="rounded-2xl border border-surface-border bg-surface/40 p-5">
               <div className="flex items-center justify-between">
                 <h3 className="text-foreground">vs {match.opponent}</h3>
                 <span className="text-xs text-muted">{new Date(match.kickoff_at).toLocaleString()}</span>
@@ -70,7 +72,7 @@ export default async function MemberPredictionsPage() {
         {past.map((match) => {
           const mine = byMatchId.get(match.id);
           return (
-            <div key={match.id} className="rounded-xl border border-surface-border p-4 text-sm">
+            <div key={match.id} className="rounded-2xl border border-surface-border bg-surface/30 p-4 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-foreground">vs {match.opponent}</span>
                 <span className="text-muted">

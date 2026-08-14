@@ -28,7 +28,7 @@ export default async function MatchDetailPage({
         <span className="capitalize">{match.status}</span>
       </p>
 
-      <form action={enterResult} className="mt-6 flex flex-col gap-4 rounded-xl border border-surface-border p-5">
+      <form action={enterResult} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5">
         <h2 className="text-sm font-medium text-foreground/90">
           {match.status === "completed" ? "Update result" : "Enter result"}
         </h2>
@@ -72,7 +72,7 @@ export default async function MatchDetailPage({
         <h2 className="font-display text-xl text-foreground">
           Predictions <span className="text-sm font-normal text-muted">({predictions?.length ?? 0})</span>
         </h2>
-        <div className="mt-3 overflow-x-auto rounded-xl border border-surface-border">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-surface-border">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
               <tr>

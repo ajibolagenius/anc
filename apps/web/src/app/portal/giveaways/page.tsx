@@ -1,4 +1,6 @@
 import { createSessionClient } from "@/lib/supabase/server-session";
+import { PageHeader } from "@/components/page-header";
+import { GiftIcon } from "@/components/icons";
 import { enterGiveaway } from "./actions";
 
 export default async function MemberGiveawaysPage() {
@@ -32,16 +34,16 @@ export default async function MemberGiveawaysPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-3xl text-foreground">Giveaways</h1>
+      <PageHeader icon={GiftIcon} title="Giveaways" subtitle="Provably-fair draws, open to your membership tier." />
 
-      <div className="mt-6 flex flex-col gap-4">
+      <div className="mt-8 flex flex-col gap-4">
         {giveaways?.map((g) => {
           const eligible = me ? g.eligibility_tiers.includes(me.activity_tier) : false;
           const entered = enteredIds.has(g.id);
           const won = wonGiveawayIds.has(g.id);
 
           return (
-            <div key={g.id} className="rounded-xl border border-surface-border p-5">
+            <div key={g.id} className="rounded-2xl border border-surface-border bg-surface/40 p-5 transition-colors hover:border-arsenal-gold/30">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="font-display text-xl text-foreground">{g.title}</h2>

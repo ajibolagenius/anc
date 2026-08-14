@@ -2,6 +2,8 @@ import { createServiceRoleClient } from "@/lib/supabase/server";
 import { NIGERIAN_STATES } from "@anc/shared";
 import { inputClassName } from "@/components/form-field";
 import { createWatchParty, approveWatchParty, rejectWatchParty } from "./actions";
+import { PageHeader } from "@/components/page-header";
+import { MapPinIcon } from "@/components/icons";
 
 export default async function AdminWatchPartiesPage() {
   const supabase = createServiceRoleClient();
@@ -28,9 +30,9 @@ export default async function AdminWatchPartiesPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Watch Parties</h1>
+      <PageHeader icon={MapPinIcon} title="Watch Parties" spotlight="var(--arsenal-gold)" />
 
-      <form action={createWatchParty} className="mt-6 flex flex-col gap-4 rounded-xl border border-surface-border p-5 max-w-xl">
+      <form action={createWatchParty} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
         <h2 className="text-sm font-medium text-foreground/90">New listing (auto-approved)</h2>
         <select name="matchId" defaultValue="" className={inputClassName}>
           <option value="">Not tied to a specific fixture (recurring venue)</option>
@@ -75,7 +77,7 @@ export default async function AdminWatchPartiesPage() {
           <h2 className="text-sm font-medium text-arsenal-gold">Pending approval</h2>
           <div className="mt-3 flex flex-col gap-3">
             {pending.map((w) => (
-              <div key={w.id} className="rounded-xl border border-arsenal-gold/40 p-4">
+              <div key={w.id} className="rounded-2xl border border-arsenal-gold/40 p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="text-sm">
                     <p className="text-foreground">
@@ -113,7 +115,7 @@ export default async function AdminWatchPartiesPage() {
         </div>
       )}
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-surface-border">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-surface-border">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>

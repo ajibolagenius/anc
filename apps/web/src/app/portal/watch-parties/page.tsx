@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createSessionClient } from "@/lib/supabase/server-session";
 import { NIGERIAN_STATES } from "@anc/shared";
 import { inputClassName } from "@/components/form-field";
+import { PageHeader } from "@/components/page-header";
+import { MapPinIcon } from "@/components/icons";
 import { submitWatchParty } from "./actions";
 
 type SearchParams = { state?: string };
@@ -46,10 +48,9 @@ export default async function WatchPartiesPage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-3xl text-foreground">Watch Parties</h1>
-      <p className="mt-2 text-sm text-muted">Find (or start) an ANC meetup for the next big match.</p>
+      <PageHeader icon={MapPinIcon} title="Watch Parties" subtitle="Find (or start) an ANC meetup for the next big match." spotlight="var(--arsenal-gold)" />
 
-      <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
+      <div className="mt-8 flex flex-wrap items-center gap-2 text-sm">
         <span className="text-muted">Filter by state:</span>
         <Link
           href="/portal/watch-parties?state="
@@ -69,7 +70,7 @@ export default async function WatchPartiesPage({
 
       <div className="mt-4 flex flex-col gap-4">
         {approved.map((w) => (
-          <div key={w.id} className="rounded-xl border border-surface-border p-5">
+          <div key={w.id} className="rounded-2xl border border-surface-border bg-surface/40 p-5 transition-colors hover:border-arsenal-gold/30">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-foreground">{w.venue_name}</h2>
@@ -107,7 +108,7 @@ export default async function WatchPartiesPage({
           <h2 className="font-display text-lg text-foreground">Your submissions</h2>
           <div className="mt-3 flex flex-col gap-2">
             {mine.map((w) => (
-              <div key={w.id} className="rounded-xl border border-surface-border p-4 text-sm">
+              <div key={w.id} className="rounded-2xl border border-surface-border bg-surface/30 p-4 text-sm">
                 <span className="text-foreground">{w.venue_name}</span>
                 <span className="ml-2 capitalize text-muted">— {w.status}</span>
               </div>
@@ -116,7 +117,7 @@ export default async function WatchPartiesPage({
         </div>
       )}
 
-      <div className="mt-10 rounded-xl border border-surface-border p-5">
+      <div className="mt-10 rounded-2xl border border-surface-border bg-surface/40 p-5">
         <h2 className="text-sm font-medium text-foreground/90">Submit a watch party</h2>
         {canSubmit ? (
           <form action={submitWatchParty} className="mt-4 flex flex-col gap-4">

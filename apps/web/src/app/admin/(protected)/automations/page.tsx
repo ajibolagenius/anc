@@ -1,5 +1,7 @@
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { AutomationTestButtons } from "./_test-buttons";
+import { PageHeader } from "@/components/page-header";
+import { ActivityIcon } from "@/components/icons";
 
 export default async function AutomationsPage() {
   const supabase = createServiceRoleClient();
@@ -34,8 +36,8 @@ export default async function AutomationsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Automations</h1>
-      <p className="mt-2 text-sm text-muted">
+      <PageHeader icon={ActivityIcon} title="Automations" spotlight="var(--arsenal-gold)" />
+      <p className="mt-3 text-sm text-muted">
         Daily crons: birthdays at 07:00 WAT, news digest at 08:00 WAT. Use the test buttons below to run either job right now
         for QA — both are idempotent, so a test-send today won't double-send when the real cron fires later.
       </p>
@@ -45,7 +47,7 @@ export default async function AutomationsPage() {
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <div>
           <h2 className="text-sm font-medium text-foreground/90">Recent birthday notifications</h2>
-          <div className="mt-3 overflow-hidden rounded-xl border border-surface-border">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-surface-border">
             <table className="w-full text-left text-sm">
               <tbody>
                 {recentBirthdays?.map((n, i) => (
@@ -64,7 +66,7 @@ export default async function AutomationsPage() {
 
         <div>
           <h2 className="text-sm font-medium text-foreground/90">Recent news digests</h2>
-          <div className="mt-3 overflow-hidden rounded-xl border border-surface-border">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-surface-border">
             <table className="w-full text-left text-sm">
               <tbody>
                 {recentDigests?.map((d) => (
@@ -83,7 +85,7 @@ export default async function AutomationsPage() {
 
       <div className="mt-10">
         <h2 className="text-sm font-medium text-foreground/90">Admin action log</h2>
-        <div className="mt-3 overflow-x-auto rounded-xl border border-surface-border">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-surface-border">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
               <tr>

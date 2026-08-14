@@ -61,7 +61,7 @@ export default async function NewsletterDetailPage({
       {/* Rendered on a white background deliberately — this previews what the
           email actually looks like in an inbox, not the admin dashboard's dark theme. */}
       <div
-        className="mt-6 overflow-hidden rounded-xl border border-surface-border bg-white"
+        className="mt-6 overflow-hidden rounded-2xl border border-surface-border bg-white"
         dangerouslySetInnerHTML={{ __html: newsletter.body_html }}
       />
 
@@ -85,7 +85,7 @@ export default async function NewsletterDetailPage({
               ({deliveryCounts.sent ?? 0} sent, {deliveryCounts.failed ?? 0} failed, {deliveryCounts.queued ?? 0} queued)
             </span>
           </h2>
-          <div className="mt-3 max-h-96 overflow-y-auto rounded-xl border border-surface-border">
+          <div className="mt-3 max-h-96 overflow-y-auto rounded-2xl border border-surface-border">
             <table className="w-full text-left text-sm">
               <thead className="sticky top-0 border-b border-surface-border bg-background text-xs uppercase tracking-wide text-muted">
                 <tr>

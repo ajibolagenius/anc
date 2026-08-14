@@ -3,6 +3,8 @@ import { createServiceRoleClient } from "@/lib/supabase/server";
 import { ACTIVITY_TIERS } from "@anc/shared";
 import { inputClassName } from "@/components/form-field";
 import { createGiveaway } from "./actions";
+import { PageHeader } from "@/components/page-header";
+import { GiftIcon } from "@/components/icons";
 
 export default async function GiveawaysPage() {
   const supabase = createServiceRoleClient();
@@ -13,9 +15,9 @@ export default async function GiveawaysPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Giveaways</h1>
+      <PageHeader icon={GiftIcon} title="Giveaways" />
 
-      <form action={createGiveaway} className="mt-6 flex flex-col gap-4 rounded-xl border border-surface-border p-5 max-w-xl">
+      <form action={createGiveaway} className="mt-6 flex flex-col gap-4 rounded-2xl border border-surface-border p-5 max-w-xl">
         <h2 className="text-sm font-medium text-foreground/90">New giveaway</h2>
         <input name="title" required placeholder="2026/27 Home Kit Annual Giveaway" className={inputClassName} />
         <textarea name="description" placeholder="Description (optional)" rows={2} className={inputClassName} />
@@ -45,7 +47,7 @@ export default async function GiveawaysPage() {
 
       {error && <p className="mt-6 text-sm text-arsenal-red-bright">{error.message}</p>}
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-surface-border">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-surface-border">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-surface-border text-xs uppercase tracking-wide text-muted">
             <tr>
