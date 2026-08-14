@@ -70,14 +70,19 @@ out — needs QR re-pair", "error")`) — treat a Sentry alert from wa-bot as a
 
 ## Failure mode 4: WA_GROUP_JID changes or is wrong
 
-If the ANC group is ever recreated (not just renamed), its JID changes and
-every send will fail with a clear error surfaced through
-`wa_bot_message_log`/`news_digest_log`/`birthday_notifications` (the
-`sendWhatsAppGroupMessage` wrapper never throws — failures are always
-logged, never silent). Get the new JID from the bot's own logs the next
-time it receives a message in the group (Baileys logs the remoteJid of
-incoming messages at higher log levels), update `WA_GROUP_JID` in
-`apps/wa-bot/.env`, and restart the service.
+The JID is tied to the group's underlying identity on WhatsApp's servers,
+not to anything user-facing — **renaming the group, changing its icon/
+description, or resetting the invite link (Group Info → Invite Link →
+Reset link) never changes the JID**, and need no action here. The JID only
+changes if the group is genuinely **recreated from scratch** — the old
+group deleted/abandoned and a brand new group chat started to replace it.
+That's rare, but when it happens every send will fail with a clear error
+surfaced through `wa_bot_message_log`/`news_digest_log`/
+`birthday_notifications` (the `sendWhatsAppGroupMessage` wrapper never
+throws — failures are always logged, never silent). Get the new JID from
+the bot's own logs the next time it receives a message in the group
+(Baileys logs the remoteJid of incoming messages at higher log levels),
+update `WA_GROUP_JID` in `apps/wa-bot/.env`, and restart the service.
 
 ## Why this design is resilient by default
 
