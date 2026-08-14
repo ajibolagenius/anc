@@ -9,23 +9,44 @@ type DigestItem = { title: string; link: string; source: string; publishedAt: st
 
 /**
  * PRD §4.8 source list, in priority order (used both to rank and to decide
- * which side of a near-duplicate story to keep). Sky Sports' team-specific
- * RSS feed could not be confirmed working as of writing (returns a generic
- * sports feed / 404 depending on the guessed URL) and is deliberately
- * omitted rather than shipping a broken endpoint — add it back once a real
- * feed URL is confirmed. Every source here is fetched independently and a
- * failure on one never blocks the others (Promise.allSettled below).
+ * which side of a near-duplicate story to keep). Two sources named in the
+ * PRD are deliberately omitted/best-effort rather than shipping something
+ * that silently doesn't work:
+ *  - Arsenal.com's official feed: every guessed RSS path (/rss.xml,
+ *    /news/rss, /feeds/news.rss) redirects to arsenal.com/404 — confirmed by
+ *    following the redirect chain, not just a bot-block. No public RSS
+ *    feed appears to exist on the current site. Omitted until a real URL
+ *    surfaces.
+ *  - Sky Sports' team-specific feed: guessed URLs either 404 or return the
+ *    general sports feed (not Arsenal-specific) — also omitted.
+ * football.london's Arsenal RSS (confirmed live, real Arsenal-specific
+ * content — verified 2026-08-14) fills the gap those two left in coverage.
+ * Every source here is fetched independently and a failure on one never
+ * blocks the others (Promise.allSettled below).
  */
 const RSS_SOURCES: { name: string; url: string }[] = [
-  { name: "Arsenal.com", url: "https://www.arsenal.com/rss.xml" },
   { name: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml" },
+  { name: "football.london", url: "https://www.football.london/arsenal-fc/?service=rss" },
   { name: "Arseblog", url: "https://www.arseblog.com/feed/" },
 ];
+/**
+ * Confirmed reachable in principle, but Reddit's bot-detection returns an
+ * HTML challenge page (403) for at least some server IPs regardless of
+ * User-Agent — this is best-effort, not guaranteed, without a real Reddit
+ * API OAuth app (out of scope: requires the user's own Reddit developer
+ * credentials). Graceful degradation means its absence never blocks the
+ * digest; treat it as a bonus source if/when it works from the deploy host.
+ */
 const REDDIT_SOURCE = { name: "r/Gunners", url: "https://www.reddit.com/r/Gunners/top/.json?t=day&limit=15" };
 const REDDIT_MIN_UPVOTES = 50;
 const MAX_AGE_HOURS = 24;
 const MAX_ITEMS = 5;
 
+// NOTE: tried `xml2js: { strict: false }` here to tolerate malformed-HTML
+// quirks in Arseblog's content:encoded section, but it broke rss-parser's
+// own RSS-version detection and regressed the confirmed-working BBC feed —
+// reverted. Arseblog's occasional parse failure is left as-is; it's just
+// one more source that Promise.allSettled below already treats as optional.
 const parser = new Parser();
 
 async function fetchRssItems(source: { name: string; url: string }): Promise<DigestItem[]> {
@@ -165,7 +186,18 @@ export async function runNewsDigestJob({ force = false }: { force?: boolean } = 
   const supabase = createServiceRoleClient();
 
   if (!force) {
-    const { data: existing } = await supabase.from("news_digest_log").select("id").eq("digest_date", digestDate).maybeSingle();
+    // Only a *successful* send blocks a same-day retry — if WhatsApp was
+    // down or the run otherwise failed, the next cron tick (or an admin
+    // test-send) should get another shot rather than being silently skipped
+    // for the rest of the day (the news_digest_log row is upserted below,
+    // so a retry updates the failed row instead of hitting the unique
+    // constraint on digest_date).
+    const { data: existing } = await supabase
+      .from("news_digest_log")
+      .select("id")
+      .eq("digest_date", digestDate)
+      .eq("status", "sent")
+      .maybeSingle();
     if (existing) return { digestDate, status: "skipped", reason: "already sent today", itemCount: 0, sourceErrors: [] };
   }
 
