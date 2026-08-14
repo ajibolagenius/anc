@@ -22,3 +22,6 @@ apps/wa-bot/auth/
 .DS_Store
 *.log
 .turbo/
+
+# Files/Directories
+docs/ANC UI mockups
